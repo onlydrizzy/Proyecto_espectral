@@ -8,23 +8,24 @@
 ## Índice
 1. [Introducción](#1-introducción)
 2. [Marco Teórico](#2-marco-teórico)
-
+   
    2.1 [Mercado financiero como red compleja](#21-mercado-financiero-como-red-compleja)  
-   2.2 [Operadores Laplacianos y Geometría Espectral](#22-operadores-laplacianos-y-geometría-espectral)  
+   2.2 [Operadores Laplacianos y Geometría Espectral](#22-operadores-laplacianos-y-geometría-espectral)
+      2.1.1 [El Espectro del Laplaciano y la Estructura de Red](#221-el-espectro-del-laplaciano-y-la-estructura-de-red)
    2.3 [Embedding Espectral y Reducción de Dimensionalidad](#23-embedding-espectral-y-reducción-de-dimensionalidad)  
    2.4 [Estabilidad Espectral](#24-estabilidad-espectral)  
-3. [Metodología y Análisis Estático](#3-metodología-y-análisis-estático)
+4. [Metodología y Análisis Estático](#3-metodología-y-análisis-estático)
 
    3.1 [Selección de Datos y Configuración de Parámetros](#31-selección-de-datos-y-configuración-de-parámetros)  
    3.2 [Análisis de la Estructura Estática (Benchmark)](#32-análisis-de-la-estructura-estática-benchmark)  
    3.3 [Métricas de Validación](#33-métricas-de-validación)  
-4. [Análisis Dinámico y Transiciones de Régimen](#4-análisis-dinámico-y-transiciones-de-régimen)
+5. [Análisis Dinámico y Transiciones de Régimen](#4-análisis-dinámico-y-transiciones-de-régimen)
 
    4.1 [Protocolo de Ventanas Móviles (Rolling Windows)](#41-protocolo-de-ventanas-móviles-rolling-windows)  
    4.2 [Estabilidad Temporal y Alineación de Procrustes](#42-estabilidad-temporal-y-alineación-de-procrustes)  
    4.3 [Análisis de la Evolución Espectral](#43-análisis-de-la-evolución-espectral)  
    4.4 [Identificación de Regímenes](#44-identificación-de-regímenes)  
-5. [Conclusiones](#5-conclusiones)
+6. [Conclusiones](#5-conclusiones)
 
 ---
 
@@ -181,14 +182,87 @@ Por tanto, el Teorema de Davis-Kahan no solo justifica el uso de los autovectore
 
 ## 3. Metodología y Análisis Estático
 
-### 3.1 Selección de Datos y Configuración de Parámetros
-Descripción del universo de activos y justificación del parámetro $k$ en el kernel self-tuning.
+### 3.1 Configuración del Experimento y Datos
+El análisis se fundamenta en un subconjunto de activos seleccionados estratégicamente para cubrir los sectores más representativos de la economía estadounidense, así como su comportamiento frente a índices de referencia. La muestra final se compone de 17 activos individuales y 2 fondos cotizados (ETFs) que actúan como proxis de mercado.
 
-### 3.2 Análisis de la Estructura Estática (Benchmark)
-Aplicación de la teoría a una ventana fija para validar que el embedding recupera la estructura sectorial.
+#### 3.1.1 Universo de Activos y Clasificación Sectorial
 
-### 3.3 Métricas de Validación
-Definición de la Información Mutua Normalizada (NMI) y el Gap Espectral como descriptores de la modularidad observada.
+Para garantizar la diversidad topológica del grafo, los activos se agruparon en siete categorías, tal como se detalla en la siguiente tabla:
+
+| Sector | Activos (Tickers) |
+| :--- | :--- |
+| **Tecnología** | AAPL, MSFT, NVDA |
+| **Finanzas** | JPM, GS, BAC |
+| **Energía** | XOM, CVX |
+| **Consumo** | KO, PG, WMT |
+| **Industriales** | CAT, GE |
+| **Salud** | JNJ, PFE |
+| **Índices** | SPY, QQQ |
+
+#### 3.1.2 Preprocesamiento de Datos
+
+Se extrajeron los precios de cierre ajustados desde el 1 de enero de 2018 hasta el 31 de diciembre de 2024. La transformación a retornos logarítmicos permite trabajar con una serie estacionaria, facilitando el cálculo de la matriz de correlación $\rho_{ij}$.
+
+Para el análisis estático inicial (benchmark), se fijó una ventana de tiempo de 60 días de negociación, la cual proporciona un equilibrio óptimo entre la estabilidad estadística de las correlaciones y la capacidad de capturar la dinámica estructural del periodo.
+
+En cuanto a la construcción de la matriz de afinidad $W$, se configuró un kernel *self-tuning* con un parámetro de **$k=5$** vecinos más cercanos. Esta elección es deliberada: dado que la mayoría de los sectores cuentan con 2 o 3 activos en esta muestra, un $k=5$ asegura que el parámetro de escala $\sigma_i$ no solo considere la cohesión interna del sector, sino que también detecte la transición hacia activos de otros sectores. 
+
+### 3.2 Construcción y Topología del Grafo Estático
+
+A partir de la matriz de afinidad $W$, se procedió a estudiar la organización global del sistema. Al aplicar el kernel *self-tuning*, la matriz resultante actúa como una codificación de la conectividad local: los activos que presentan distancias de Mantegna reducidas mantienen pesos $W_{ij} \approx 1$, mientras que las conexiones intersectoriales se ven atenuadas exponencialmente.
+
+El análisis del espectro de la matriz $L$ reveló la existencia de una estructura multiescala. El primer autovalor $\lambda_1 = 0$ confirma la conectividad del grafo, mientras que los valores de $\lambda_2$ y $\lambda_3$ definen la topología de base que será utilizada para la reducción de dimensionalidad.
+
+![Eigenvalores benchmark](../images/ev_bench.png)
+
+*El scree plot muestra un gap significativo (codo) tras los primeros tres autovalores. Este salto inicial confirma que la varianza estructural y la modularidad del mercado pueden capturarse eficazmente reduciendo el sistema a las dimensiones definidas por* $\lambda_2$ *y* $\lambda_3$.
+
+### 3.3 Visualización y Geometría del Mercado (El Embedding)
+
+La proyección de los activos en el espacio espectral definido por $u_2$ y $u_3$ permite visualizar la formación de agrupamientos sin haber proporcionado etiquetas previas al algoritmo.
+
+### 3.3.1 Análisis del Embedding Espectral
+
+El plano $(u_2, u_3)$ muestra una clara segregación de los activos en función de sus actividades económicas fundamentales.
+
+![Embedding benchmark](../images/emb_bench.png)
+
+*El embedding proyecta una clara segmentación sectorial: NVDA, AAPL y MSFT coexisten en un cluster tecnológico compacto, distantes de sectores defensivos como Salud (JNJ) y Consumo (PG, KO). Los índices SPY y QQQ adoptan una posición periférica/inferior, actuando como anclajes que sintetizan la exposición de las grandes tecnológicas.*
+
+### 3.3.2 Propiedades de los Autovectores: Suavidad y Energía de Dirichlet
+
+Para validar que los autovectores seleccionados capturan la estructura de la red de manera significativa, se calculó la **Energía de Dirichlet** $\mathcal{E}(u)$ para $u_2$ y $u_3$. Esta métrica cuantifica qué tan "suave" es una función (en este caso, el autovector) sobre los nodos del grafo, penalizando las transiciones bruscas entre activos altamente correlacionados:
+
+$$
+\mathcal{E}(u) = \frac{1}{2} \sum_{i,j} W_{ij} (u_i - u_j)^2 = u^T L u
+$$
+
+En la ventana estática analizada (benchmark), los resultados obtenidos a partir del formalismo espectral fueron:
+*   **$\mathcal{E}(u_2) \approx 9.0116$**
+*   **$\mathcal{E}(u_3) \approx 9.8157$**
+
+Adicionalmente, se calculó la **variación local promedio**, que mide la diferencia absoluta de los valores del autovector entre cada activo y su vecino más cercano en el embedding:
+*   **Variación local en $u_2: 0.0651$**
+*   **Variación local en $u_3: 0.0714$**
+
+Estos valores indican una alta **consistencia topológica**. Dado que la variación local es pequeña en relación con el rango total de los autovectores, se confirma que el embedding logra una "difusión" coherente de la información sectorial. Matemáticamente, esto garantiza que activos con alta afinidad (como MSFT y AAPL) mantengan coordenadas casi idénticas en el espacio proyectado, minimizando la energía del sistema y asegurando que la cercanía geométrica sea un reflejo fiel de la proximidad económica.
+
+![Eigenvectores benchmark](../images/eiv_bench.png)
+
+*Las barras muestran cómo cada activo contribuye a la dimensión espectral. Los bloques de barras con alturas similares representan sectores que el autovector está agrupando en una misma región del espacio.*
+
+![Ordenamiento por valor](../images/ord_bench.png)
+
+*Los saltos abruptos marcan las fronteras entre comunidades sectoriales.*
+
+## 3.4 Validación Mediante Clustering y NMI
+
+Para concluir la caracterización estática, se aplicó el algoritmo de **K-means** sobre el espacio euclidiano definido por el embedding $(u_2, u_3)$. El objetivo es contrastar si los grupos identificados puramente por la geometría del Laplaciano (método no supervisado) coinciden con la clasificación sectorial económica predefinida.
+
+La métrica de **Información Mutua Normalizada (NMI)** arrojó un resultado de:
+*   **NMI $\approx$ 0.8324**
+
+Este valor representa una evidencia empírica contundente: existe una coincidencia superior al 83% entre la estructura de correlaciones intrínsecas del mercado y las etiquetas sectoriales fundamentales. Este alto grado de concordancia valida el uso del embedding espectral como un "mapa" fidedigno de la economía y establece el punto de referencia (benchmark) necesario para evaluar, en las secciones siguientes, cómo esta estructura se degrada o fortalece ante eventos de inestabilidad financiera.
 
 ## 4. Análisis Dinámico y Transiciones de Régimen
 
