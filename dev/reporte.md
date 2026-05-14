@@ -36,7 +36,7 @@ Contexto del mercado como sistema complejo y el objetivo de identificar transici
 
 ### 2.1 Mercado financiero como red compleja
 
-El mercado financiero ha sido ampliamente estudiado desde la perspectiva de la teoría de redes debido a que las interacciones entre activos generan estructuras de dependencia no triviales. La literatura reconoce que dichas interacciones pueden representarse mediante redes ponderadas, en las cuales los nodos corresponden a entidades financieras o activos, y las aristas codifican relaciones de dependencia o similitud entre ellos (Caccioli, Barucca y Kobayashi, 2018; Cont et al., 2010).
+El mercado financiero ha sido ampliamente estudiado desde la perspectiva de la teoría de grafos debido a que las interacciones entre activos generan estructuras de dependencia no triviales. La literatura reconoce que dichas interacciones pueden representarse mediante redes ponderadas, en las cuales los nodos corresponden a entidades financieras o activos, y las aristas codifican relaciones de dependencia o similitud entre ellos (Caccioli, Barucca y Kobayashi, 2018; Cont et al., 2010).
 
 Dado que el universo completo de activos negociables es extremadamente grande, en la práctica el análisis suele realizarse sobre un subconjunto representativo de activos, seleccionado de acuerdo con el objetivo de estudio. Dicho subconjunto induce una red financiera que preserva, al menos de forma local, relaciones estructurales relevantes del mercado.
 
@@ -87,7 +87,7 @@ $$
 
 Esta transformación permite reinterpretar las dependencias estadísticas entre activos como distancias geométricas en un espacio latente.
 
-Posteriormente, a partir de la matriz de distancias se construye una matriz de afinidad mediante un kernel gaussiano adaptativo de tipo *self-tuning* (Zelnik-Manor y Perona, 2004):
+Posteriormente, a partir de la matriz de distancias se construye una matriz de afinidad mediante un kernel gaussiano adaptativo de tipo self-tuning (Zelnik-Manor y Perona, 2004):
 
 $$
 W_{ij}=
@@ -124,7 +124,7 @@ Por tanto, la representación del mercado como red compleja constituye la base c
 
 ### 2.2 Operadores Laplacianos y Geometría Espectral
 
-Una vez definida la matriz de afinidad $W$, la caracterización de la estructura global de la red se realiza a través de los operadores Laplacianos. El Laplaciano permite analizar propiedades geométricas del sistema mediante el estudio de su espectro, actuando como una discretización de operadores de difusión sobre la geometría inducida por las correlaciones de los activos (Chung, 1997; von Luxburg, 2007).
+Una vez definida la matriz de afinidad $W$, la caracterización de la estructura global de una red se realiza a través de los operadores Laplacianos. El Laplaciano permite analizar propiedades geométricas del sistema mediante el estudio de su espectro, actuando como una discretización de operadores de difusión sobre la geometría inducida por las correlaciones de los activos (Chung, 1997; von Luxburg, 2007).
 
 Sea $D$ la matriz de grado de la red, definida como la matriz diagonal donde cada elemento $D_{ii} = \sum_{j=1}^{n} W_{ij}$. Para este estudio, se utiliza el Laplaciano normalizado simétrico, denotado como $L$, el cual se define como:
 
@@ -165,7 +165,7 @@ sujeta a restricciones de ortogonalidad para evitar soluciones triviales. Al min
 
 ### 2.4 Estabilidad Espectral y el Teorema de Davis-Kahan
 
-Como buscamos analizar el mercado financiero de manera dinámica, es decir, mediante ventanas móviles, es imperativo garantizar que las variaciones observadas en el embedding y en el espectro del Laplaciano correspondan a cambios estructurales genuinos y no a perturbaciones estocásticas inherentes a las series de tiempo. La estabilidad de los subespacios propios ante perturbaciones en la matriz de afinidad se sustenta en la teoría de perturbación de matrices, específicamente en el **Teorema de Davis-Kahan** (Davis y Kahan, 1970).
+Como buscamos analizar el mercado financiero de manera dinámica, es decir, mediante ventanas móviles, es imperativo garantizar que las variaciones observadas en el embedding y en el espectro del Laplaciano correspondan a cambios estructurales genuinos y no a perturbaciones estocásticas inherentes a las series de tiempo. La estabilidad de los subespacios propios ante perturbaciones en la matriz de afinidad se sustenta en la teoría de perturbación de matrices, específicamente en el Teorema de Davis-Kahan (Davis y Kahan, 1970).
 
 Consideremos el Laplaciano original $L$ y una versión perturbada $\tilde{L} = L + E$, donde $E$ representa el ruido o pequeñas variaciones en las correlaciones de los activos. El teorema establece que la distancia angular entre los subespacios propios (los autovectores que forman el embedding) está acotada por el cociente entre la magnitud de la perturbación $\|E\|$ y el gap espectral $\delta$:
 
@@ -173,7 +173,7 @@ $$
 \hat{d}(u, \tilde{u}) \leq \frac{\|E\|}{\delta}
 $$
 
-Donde $\delta$ representa la distancia mínima entre el autovalor de interés y el resto del espectro (el gap). En el contexto de este proyecto, esta relación tiene dos implicaciones críticas:
+Donde $\delta$ representa la distancia mínima entre el autovalor de interés y el resto del espectro (el gap). En el contexto de este proyecto, veremos que esta relación tiene dos implicaciones críticas:
 
 1. **Fiabilidad del Embedding:** En periodos de alta modularidad (donde el gap espectral es grande), el embedding es sumamente robusto. Pequeñas fluctuaciones en los precios no alteran la posición relativa de los activos en el mapa espectral, validando la estabilidad de los sectores identificados.
 2. **Sensibilidad en Crisis:** Durante periodos de acoplamiento global, el gap espectral $\delta$ tiende a reducirse significativamente. De acuerdo con el teorema, esto incrementa la sensibilidad de los autovectores ante cualquier perturbación, lo que tomará relevancia posteriormente en la interpretación de resultados.
@@ -205,21 +205,21 @@ Se extrajeron los precios de cierre ajustados desde el 1 de enero de 2018 hasta 
 
 Para el análisis estático inicial (benchmark), se fijó una ventana de tiempo de 60 días de negociación, la cual proporciona un equilibrio óptimo entre la estabilidad estadística de las correlaciones y la capacidad de capturar la dinámica estructural del periodo.
 
-En cuanto a la construcción de la matriz de afinidad $W$, se configuró un kernel *self-tuning* con un parámetro de **$k=5$** vecinos más cercanos. Esta elección es deliberada: dado que la mayoría de los sectores cuentan con 2 o 3 activos en esta muestra, un $k=5$ asegura que el parámetro de escala $\sigma_i$ no solo considere la cohesión interna del sector, sino que también detecte la transición hacia activos de otros sectores. 
+En cuanto a la construcción de la matriz de afinidad $W$, se configuró un kernel self-tuning con un parámetro de **$k=5$** vecinos más cercanos. Esta elección es deliberada: dado que la mayoría de los sectores cuentan con 2 o 3 activos en esta muestra, un $k=5$ asegura que el parámetro de escala $\sigma_i$ no solo considere la cohesión interna del sector, sino que también detecte la transición hacia activos de otros sectores. 
 
 ### 3.2 Construcción y Topología del Grafo Estático
 
-A partir de la matriz de afinidad $W$, se procedió a estudiar la organización global del sistema. Al aplicar el kernel *self-tuning*, la matriz resultante actúa como una codificación de la conectividad local: los activos que presentan distancias de Mantegna reducidas mantienen pesos $W_{ij} \approx 1$, mientras que las conexiones intersectoriales se ven atenuadas exponencialmente.
+A partir de la matriz de afinidad $W$, se procedió a estudiar la organización global del sistema. Al aplicar el kernel self-tuning, la matriz resultante actúa como una codificación de la conectividad local: los activos que presentan distancias de Mantegna reducidas mantienen pesos $W_{ij} \approx 1$, mientras que las conexiones intersectoriales se ven atenuadas exponencialmente.
 
 El análisis del espectro de la matriz $L$ reveló la existencia de una estructura multiescala. El primer autovalor $\lambda_1 = 0$ confirma la conectividad del grafo, mientras que los valores de $\lambda_2$ y $\lambda_3$ definen la topología de base que será utilizada para la reducción de dimensionalidad.
 
-![Eigenvalores benchmark](../images/ev_bench.png)
+![Eigenvalores benchmark](../images/lambdas_bench.png)
 
 *El scree plot muestra un gap significativo (codo) tras los primeros tres autovalores. Este salto inicial confirma que la varianza estructural y la modularidad del mercado pueden capturarse eficazmente reduciendo el sistema a las dimensiones definidas por* $\lambda_2$ *y* $\lambda_3$.
 
 ### 3.3 Visualización y Geometría del Mercado (El Embedding)
 
-La proyección de los activos en el espacio espectral definido por $u_2$ y $u_3$ permite visualizar la formación de agrupamientos sin haber proporcionado etiquetas previas al algoritmo.
+La proyección de los activos en el espacio espectral definido por $u_2$ y $u_3$ permite visualizar la formación de agrupamientos sin haber proporcionado etiquetas previas.
 
 ### 3.3.1 Análisis del Embedding Espectral
 
@@ -231,7 +231,7 @@ El plano $(u_2, u_3)$ muestra una clara segregación de los activos en función 
 
 ### 3.3.2 Propiedades de los Autovectores: Suavidad y Energía de Dirichlet
 
-Para validar que los autovectores seleccionados capturan la estructura de la red de manera significativa, se calculó la **Energía de Dirichlet** $\mathcal{E}(u)$ para $u_2$ y $u_3$. Esta métrica cuantifica qué tan "suave" es una función (en este caso, el autovector) sobre los nodos del grafo, penalizando las transiciones bruscas entre activos altamente correlacionados:
+Para validar que los autovectores seleccionados capturan la estructura de la red de manera significativa, se calculó la Energía de Dirichlet: $\mathcal{E}(u)$ para $u_2$ y $u_3$. Esta métrica cuantifica qué tan "suave" es una función (en este caso, el autovector) sobre los nodos del grafo, penalizando las transiciones bruscas entre activos altamente correlacionados:
 
 $$
 \mathcal{E}(u) = \frac{1}{2} \sum_{i,j} W_{ij} (u_i - u_j)^2 = u^T L u
@@ -245,9 +245,9 @@ Adicionalmente, se calculó la **variación local promedio**, que mide la difere
 *   **Variación local en $u_2: 0.0651$**
 *   **Variación local en $u_3: 0.0714$**
 
-Estos valores indican una alta **consistencia topológica**. Dado que la variación local es pequeña en relación con el rango total de los autovectores, se confirma que el embedding logra una "difusión" coherente de la información sectorial. Matemáticamente, esto garantiza que activos con alta afinidad (como MSFT y AAPL) mantengan coordenadas casi idénticas en el espacio proyectado, minimizando la energía del sistema y asegurando que la cercanía geométrica sea un reflejo fiel de la proximidad económica.
+Estos valores indican una alta consistencia topológica. Dado que la variación local es pequeña en relación con el rango total de los autovectores, se confirma que el embedding logra una "difusión" coherente de la información sectorial. Matemáticamente, esto garantiza que activos con alta afinidad (como MSFT y AAPL) mantengan coordenadas casi idénticas en el espacio proyectado, minimizando la energía del sistema y asegurando que la cercanía geométrica sea un reflejo fiel de la proximidad económica.
 
-![Eigenvectores benchmark](../images/eiv_bench.png)
+![Eigenvectores benchmark](../images/eigvec_bench.png)
 
 *Las barras muestran cómo cada activo contribuye a la dimensión espectral. Los bloques de barras con alturas similares representan sectores que el autovector está agrupando en una misma región del espacio.*
 
