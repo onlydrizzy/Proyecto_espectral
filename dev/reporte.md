@@ -32,6 +32,8 @@
 ## 1. Introducción
 Contexto del mercado como sistema complejo y el objetivo de identificar transiciones de régimen mediante geometría espectral.
 
+---
+
 ## 2. Marco Teórico
 
 ### 2.1 Mercado financiero como red compleja
@@ -180,6 +182,8 @@ Donde $\delta$ representa la distancia mínima entre el autovalor de interés y 
 
 Por tanto, el Teorema de Davis-Kahan no solo justifica el uso de los autovectores como descriptores estables de la morfología del mercado, sino que también vincula matemáticamente la pérdida de modularidad (reducción del gap) con la inestabilidad de la estructura sectorial. Esto permitirá transitar del análisis estático de una sola ventana hacia el análisis dinámico de la evolución del mercado con rigor matemático.
 
+---
+
 ## 3. Metodología y Análisis Estático
 
 ### 3.1 Configuración del Experimento y Datos
@@ -251,7 +255,8 @@ Estos valores indican una alta consistencia topológica. Dado que la variación 
 
 *Las barras muestran cómo cada activo contribuye a la dimensión espectral. Los bloques de barras con alturas similares representan sectores que el autovector está agrupando en una misma región del espacio.*
 
-![Ordenamiento por valor](../images/ord_bench.png)
+![Ordenamiento por valor1](../images/ord_bench.png)
+![Ordenamiento por valor2](../images/ord2_bench.png)
 
 *Los saltos abruptos marcan las fronteras entre comunidades sectoriales.*
 
@@ -260,23 +265,52 @@ Estos valores indican una alta consistencia topológica. Dado que la variación 
 Para concluir la caracterización estática, se aplicó el algoritmo de **K-means** sobre el espacio euclidiano definido por el embedding $(u_2, u_3)$. El objetivo es contrastar si los grupos identificados puramente por la geometría del Laplaciano (método no supervisado) coinciden con la clasificación sectorial económica predefinida.
 
 La métrica de **Información Mutua Normalizada (NMI)** arrojó un resultado de:
-*   **NMI $\approx$ 0.8324**
+*   **NMI $\approx$ 0.826**
 
 Este valor representa una evidencia empírica contundente: existe una coincidencia superior al 83% entre la estructura de correlaciones intrínsecas del mercado y las etiquetas sectoriales fundamentales. Este alto grado de concordancia valida el uso del embedding espectral como un "mapa" fidedigno de la economía y establece el punto de referencia (benchmark) necesario para evaluar, en las secciones siguientes, cómo esta estructura se degrada o fortalece ante eventos de inestabilidad financiera.
 
-## 4. Análisis Dinámico y Transiciones de Régimen
+---
 
-### 4.1 Protocolo de Ventanas Móviles (Rolling Windows)
-Definición de *window* y *step*.
+## 4. Análisis Dinámico y Transición de Regímenes
 
-### 4.2 Estabilidad Temporal y Alineación de Procrustes
-Resolución de la ambigüedad ortogonal para permitir la comparación de embeddings sucesivos.
+Para capturar la naturaleza evolutiva de los mercados financieros, el formalismo espectral debe transicionar de una caracterización estática a un esquema dinámico capaz de rastrear las mutaciones en la conectividad del sistema.
 
-### 4.3 Análisis de la Evolución Espectral
-Resultados de la fluctuación del Gap y NMI a lo largo del tiempo.
+### 4.1 Protocolo de Ventanas Móviles y Estabilidad Geométrica
 
-### 4.4 Identificación de Regímenes
-Discusión sobre los estados de modularidad sectorial vs. acoplamiento global (énfasis en el periodo COVID-19).
+#### 4.1.1 Configuración de Ventanas Temporales
+
+La dinámica temporal se modela mediante un enfoque de ventanas móviles (*rolling windows*). Se fijó un tamaño de ventana de $\tau = 60$ días de negociación con un desplazamiento o paso de $\Delta t = 5$ días. Para cada segmento temporal $t$, se aísla la matriz de retornos logarítmicos $R_t$, lo que permite calcular una sucesión de matrices de afinidad $W_t$ y sus respectivos Laplacianos normalizados $L_t$. Este diseño experimental garantiza una resolución temporal lo suficientemente fina para detectar shocks de mercado sin perder la estabilidad estadística necesaria en la estimación de las correlaciones locales.
+
+#### 4.1.2 El Problema de la Indeterminación Espectral y Alineación de Procrustes
+
+Un desafío matemático fundamental al calcular descomposiciones espectrales de forma secuencial es la **indeterminación de base**. Dado que los autovectores correspondientes a un autovalor están definidos salvo por su signo, y que variaciones mínimas en los datos pueden rotar los subespacios propios, las coordenadas del embedding $X_t = [u_2, u_3] \in \mathbb{R}^{n \times 2}$ en el tiempo $t$ no son directamente comparables con las del tiempo $t-1$. Visualmente, esto provocaría que los activos "salten" de un cuadrante a otro de manera artificial entre ventanas consecutivas, imposibilitando el rastreo de trayectorias.
+
+Para resolver esta falta de unicidad geométrica, se implementó el **Problema de Procrustes Ortogonal**. Para cada ventana $t \geq 1$, se busca una matriz de rotación ortogonal $R_{\text{opt}} \in \mathbb{R}^{2 \times 2}$ que minimice la distancia de Frobenius entre el embedding actual y el embedding de la ventana inmediatamente anterior, actuando este último como configuración de referencia:
+
+$$
+\min_{R} \|X_t R - X_{t-1}\|_F^2 \quad \text{sujeto a} \quad R^T R = I
+$$
+
+Utilizando la descomposición en valores singulares (SVD) del producto inter-matriz $X_t^T X_{t-1} = U \Sigma V^T$, la solución analítica óptima se establece como $R_{\text{opt}} = U V^T$. El embedding alineado se calcula entonces como $X_t^{\text{aligned}} = X_t R_{\text{opt}}$. Esta transformación preserva intactas las distancias euclidianas internas y la estructura de clusters de cada ventana, pero elimina los efectos espurios de rotación y reflexión, garantizando así la continuidad geométrica.
+
+### 4.2 Dinámica del Espectro y el Gap Espectral
+
+Los autovalores del Laplaciano normalizado codifican las propiedades macroscópicas de la red en cada instante de tiempo. Su evolución temporal actúa como un indicador temprano de transiciones de fase en el mercado.
+
+#### 4.2.1 Evolución de la Conectividad Algebraica ($\lambda_2$) y Autovalores Superiores
+
+El segundo autovalor, o valor de Fiedler ($\lambda_2$), mide la conectividad algebraica del sistema. Un colapso de $\lambda_2$ hacia cero indica que el grafo está cerca de fragmentarse en componentes disjuntas o, en el contexto financiero, que las fuerzas macroeconómicas globales han dominado a las dinámicas sectoriales, incrementando la correlación generalizada y unificando el mercado.
+
+![Lamndas dinámicas](../images/lamdas_din.png)
+
+*La evolución temporal muestra una marcada compresión del espectro durante crisis sistémicas, destacando el colapso de* $\lambda_2$ *en la época covid. Este descenso evidencia un aumento en la correlación global que absorbe la modularidad sectorial del mercado durante periodos de estrés macroeconómico.*
+
+#### 4.2.2 Dinámica del Gap Espectral
+
+El gap espectral primario, definido como $\delta_t = \lambda_3 - \lambda_2$, es el parámetro gobernante en la estabilidad del embedding según el teorema de Davis-Kahan. Cuando $\delta_t$ se reduce drásticamente, los subespacios propios se vuelven altamente sensibles al ruido, lo que se traduce en una pérdida de nitidez en las fronteras de los sectores económicos dentro del embedding.
+
+![Gap dinámico](../images/gap_din.png)
+*Al ensancharse la distancia entre* $\lambda_2$ *y* $\lambda_3$ *el sistema blindó el embedding contra el ruido (Davis-Kahan), permitiendo al algoritmo identificar esta polarización macro-sectorial con mayor claridad.*
 
 ## 5. Conclusiones
 Síntesis de cómo el espectro del Laplaciano actúa como un termómetro de la cohesión del mercado.
