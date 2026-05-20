@@ -163,7 +163,7 @@ $$
 \mathcal{Q} = \sum_{i,j} W_{ij} \|x_i - x_j\|^2
 $$
 
-sujeta a restricciones de ortogonalidad para evitar soluciones triviales. Al minimizar $\mathcal{Q}$, se garantiza que aquellos activos que poseen una alta afinidad $W_{ij}$ (y por ende una alta correlación histórica) queden situados en puntos cercanos dentro del plano del embedding. De este modo, la disposición geométrica de los activos en el espacio espectral no es arbitraria, sino que refleja las dependencias estadísticas más profundas del mercado, permitiendo observar visualmente la formación de clusters sectoriales.
+sujeta a restricciones de ortogonalidad para evitar soluciones triviales. Al minimizar $\mathcal{Q}$, se garantiza que aquellos activos que poseen una alta afinidad $W_{ij}$ (y por ende una alta correlación histórica) queden situados en puntos cercanos dentro del plano del embedding. De este modo, la disposición geométrica de los activos en el espacio espectral no es arbitraria, sino que refleja las dependencias estadísticas más profundas del mercado. 
 
 ### 2.4 Estabilidad Espectral y el Teorema de Davis-Kahan
 
@@ -191,7 +191,7 @@ El análisis se fundamenta en un subconjunto de activos seleccionados estratégi
 
 #### 3.1.1 Universo de Activos y Clasificación Sectorial
 
-Para garantizar la diversidad topológica del grafo, los activos se agruparon en siete categorías, tal como se detalla en la siguiente tabla:
+Para garantizar la diversidad topológica del grafo, los activos se eligieron en base a siete categorías, tal como se detalla en la siguiente tabla:
 
 | Sector | Activos (Tickers) |
 | :--- | :--- |
@@ -205,7 +205,7 @@ Para garantizar la diversidad topológica del grafo, los activos se agruparon en
 
 #### 3.1.2 Preprocesamiento de Datos
 
-Se extrajeron los precios de cierre ajustados desde el 1 de enero de 2018 hasta el 31 de diciembre de 2024. La transformación a retornos logarítmicos permite trabajar con una serie estacionaria, facilitando el cálculo de la matriz de correlación $\rho_{ij}$.
+Se extrajeron los precios de cierre, utilizando la API de Yahoo Finance, ajustados desde el 1 de enero de 2018 hasta el 31 de diciembre de 2024. La transformación a retornos logarítmicos permite trabajar con una serie estacionaria, facilitando el cálculo de la matriz de correlación $\rho_{ij}$.
 
 Para el análisis estático inicial (benchmark), se fijó una ventana de tiempo de 60 días de negociación, la cual proporciona un equilibrio óptimo entre la estabilidad estadística de las correlaciones y la capacidad de capturar la dinámica estructural del periodo.
 
@@ -215,10 +215,11 @@ En cuanto a la construcción de la matriz de afinidad $W$, se configuró un kern
 
 A partir de la matriz de afinidad $W$, se procedió a estudiar la organización global del sistema. Al aplicar el kernel self-tuning, la matriz resultante actúa como una codificación de la conectividad local: los activos que presentan distancias de Mantegna reducidas mantienen pesos $W_{ij} \approx 1$, mientras que las conexiones intersectoriales se ven atenuadas exponencialmente.
 
+*Ver el gráfico estático en la sección 3.3.1*
+
 El análisis del espectro de la matriz $L$ reveló la existencia de una estructura multiescala. El primer autovalor $\lambda_1 = 0$ confirma la conectividad del grafo, mientras que los valores de $\lambda_2$ y $\lambda_3$ definen la topología de base que será utilizada para la reducción de dimensionalidad.
 
 ![Eigenvalores benchmark](../images/lambdas_bench.png)
-
 *El scree plot muestra un gap significativo (codo) tras los primeros tres autovalores. Este salto inicial confirma que la varianza estructural y la modularidad del mercado pueden capturarse eficazmente reduciendo el sistema a las dimensiones definidas por* $\lambda_2$ *y* $\lambda_3$.
 
 ### 3.3 Visualización y Geometría del Mercado (El Embedding)
@@ -230,7 +231,6 @@ La proyección de los activos en el espacio espectral definido por $u_2$ y $u_3$
 El plano $(u_2, u_3)$ muestra una clara segregación de los activos en función de sus actividades económicas fundamentales.
 
 ![Embedding benchmark](../images/emb_bench.png)
-
 *El embedding proyecta una clara segmentación sectorial: NVDA, AAPL y MSFT coexisten en un cluster tecnológico compacto, distantes de sectores defensivos como Salud (JNJ) y Consumo (PG, KO). Los índices SPY y QQQ adoptan una posición periférica/inferior, actuando como anclajes que sintetizan la exposición de las grandes tecnológicas.*
 
 ### 3.3.2 Propiedades de los Autovectores: Suavidad y Energía de Dirichlet
@@ -245,19 +245,17 @@ En la ventana estática analizada (benchmark), los resultados obtenidos a partir
 *   **$\mathcal{E}(u_2) \approx 9.0116$**
 *   **$\mathcal{E}(u_3) \approx 9.8157$**
 
-Adicionalmente, se calculó la **variación local promedio**, que mide la diferencia absoluta de los valores del autovector entre cada activo y su vecino más cercano en el embedding:
+Adicionalmente, se calculó la variación local promedio, que mide la diferencia absoluta de los valores del autovector entre cada activo y su vecino más cercano en el embedding:
 *   **Variación local en $u_2: 0.0651$**
 *   **Variación local en $u_3: 0.0714$**
 
 Estos valores indican una alta consistencia topológica. Dado que la variación local es pequeña en relación con el rango total de los autovectores, se confirma que el embedding logra una "difusión" coherente de la información sectorial. Matemáticamente, esto garantiza que activos con alta afinidad (como MSFT y AAPL) mantengan coordenadas casi idénticas en el espacio proyectado, minimizando la energía del sistema y asegurando que la cercanía geométrica sea un reflejo fiel de la proximidad económica.
 
 ![Eigenvectores benchmark](../images/eigvec_bench.png)
-
 *Las barras muestran cómo cada activo contribuye a la dimensión espectral. Los bloques de barras con alturas similares representan sectores que el autovector está agrupando en una misma región del espacio.*
 
 ![Ordenamiento por valor1](../images/ord_bench.png)
 ![Ordenamiento por valor2](../images/ord2_bench.png)
-
 *Los saltos abruptos marcan las fronteras entre comunidades sectoriales.*
 
 ## 3.4 Validación Mediante Clustering y NMI
@@ -302,8 +300,9 @@ Los autovalores del Laplaciano normalizado codifican las propiedades macroscópi
 El segundo autovalor, o valor de Fiedler ($\lambda_2$), mide la conectividad algebraica del sistema. Un colapso de $\lambda_2$ hacia cero indica que el grafo está cerca de fragmentarse en componentes disjuntas o, en el contexto financiero, que las fuerzas macroeconómicas globales han dominado a las dinámicas sectoriales, incrementando la correlación generalizada y unificando el mercado.
 
 ![Lamndas dinámicas](../images/lamdas_din.png)
-
 *La evolución temporal muestra una marcada compresión del espectro durante crisis sistémicas, destacando el colapso de* $\lambda_2$ *en la época covid. Este descenso evidencia un aumento en la correlación global que absorbe la modularidad sectorial del mercado durante periodos de estrés macroeconómico.*
+
+Además, la monotonía de Fiedler nos garantiza que al quitar aristas (o reducir su peso $W_{ij}$) nunca puede aumentar el valor de Fiedler; solo puede mantenerlo igual o disminuirlo. Esto es importante porque confirma que cualquier aumento en la correlación entre sectores se traduce inmediatamente en una pérdida de la estructura modular.
 
 #### 4.2.2 Dinámica del Gap Espectral
 
@@ -311,6 +310,32 @@ El gap espectral primario, definido como $\delta_t = \lambda_3 - \lambda_2$, es 
 
 ![Gap dinámico](../images/gap_din.png)
 *Al ensancharse la distancia entre* $\lambda_2$ *y* $\lambda_3$ *el sistema blindó el embedding contra el ruido (Davis-Kahan), permitiendo al algoritmo identificar esta polarización macro-sectorial con mayor claridad.*
+
+### 4.3 Análisis de la Estructura Comunitaria (NMI Dinámico)
+
+Mientras que los autovalores ofrecen una lectura puramente topológica de la conectividad global, el NMI dinámico permite evaluar en qué medida la geometría del embedding preserva la lógica económica fundamental a lo largo del tiempo. En cada ventana temporal, el algoritmo K-means divide el embedding alineado en un número de clusters equivalente a la cantidad de sectores reales ($k = 7$). El NMI cuantifica la concordancia entre estas agrupaciones puramente estadísticas y las etiquetas sectoriales de la industria.
+
+![NMI dinámico](../images/nmi_din.png)
+
+Al analizar la trayectoria temporal del NMI entre 2018 y 2025, se desprenden tres hallazgos empíricos fundamentales sobre la organización del mercado:
+
+#### 4.3.1 Resiliencia de la Estructura Fundamental
+
+La estructura sectorial del mercado muestra una notable resiliencia. A lo largo de la mayor parte del periodo analizado, el NMI fluctúa de manera persistente en un régimen alto, manteniéndose mayoritariamente dentro del rango de $[0.75, 0.88]$, y alcanzando un máximo histórico cercano a $0.95$ a finales de 2023. Esto demuestra que, en condiciones normales de operación, el embedding espectral derivado del Laplaciano normalizado codifica de forma robusta y estable los fundamentos económicos de las empresas.
+
+#### 4.3.2 Shocks de Desacoplamiento Estructural Transitorios
+
+El comportamiento más revelador de la dinámica ocurre durante los periodos de estrés, donde la curva experimenta contracciones abruptas y profundas. Estas caídas representan eventos de desacoplamiento estructural: momentos específicos en los que el mercado ignora los fundamentos individuales de los sectores y los activos comienzan a agruparse en función de factores de riesgo sistémico o macroeconómico comunes (p. ej., volatilidad generalizada o corridas hacia la liquidez).
+
+Matemáticamente, estas degradaciones del NMI coinciden con las ventanas temporales donde el gap espectral se reduce.
+
+#### 4.3.3 Correspondencia con Eventos Macroeconómicos Históricos
+
+Las anomalías estructurales detectadas por el NMI no son erráticas, sino que se alinean con precisión cronológica ante shocks macroeconómicos reales:
+1. **El Shock del COVID-19:** Se observa una serie de caídas consecutivas y profundas donde el NMI toca mínimos de $0.65$. Esto refleja el pánico generalizado del confinamiento global, donde todos los sectores se correlacionaron de forma masiva, desdibujando las fronteras del embedding.
+2. **El Régimen Inflacionario y Alza de Tasas:** La curva muestra una alta inestabilidad con caídas violentas a mediados de 2021 y principios de 2022, periodos marcados por el inicio del endurecimiento de la política monetaria de la Reserva Federal, un factor macroeconómico que afectó transversalmente a múltiples sectores.
+
+Un aspecto crítico del sistema es su capacidad de recuperación: tras alcanzar un mínimo, el NMI experimenta rebotes elásticos hacia su media histórica. Esto denota que las transiciones de régimen hacia la desorganización comunitaria son de carácter transitorio; una vez absorbido el shock por el mercado, las fuerzas de arbitraje sectorial restablecen la geometría fundamental del grafo.
 
 ## 5. Conclusiones
 Síntesis de cómo el espectro del Laplaciano actúa como un termómetro de la cohesión del mercado.
