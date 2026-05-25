@@ -4,6 +4,7 @@
 > **Proyecto**: Análisis espectral de la estructura y dinámica de redes financieras.
 
 **Autor**: Dylan Ramírez Hernández
+![Portada](../images/red_fin.png)
 
 ## Índice
 1. [Introducción](#1-introducción)
@@ -237,7 +238,7 @@ El plano $(u_2, u_3)$ muestra una clara segregación de los activos en función 
 
 ![Grafo benchmark](../images/grafo_bench.png)
 
-*Visualización del grafo estático sobre espacio espectral*
+*Visualización del grafo estático (*$k$*-nn)sobre espacio espectral.*
 
 ### 3.3.2 Propiedades de los Autovectores: Suavidad y Energía de Dirichlet
 
@@ -354,7 +355,9 @@ Para sintetizar la evolución conjunta de las coordenadas geométricas y las int
 En cada fotograma de la animación:
 1. **Posicionamiento de Nodos:** Las coordenadas $(x, y)$ de cada activo corresponden a sus valores alineados en el embedding $(u_2, u_3)$, corregidos mediante la rotación de Procrustes para garantizar la continuidad visual.
 2. **Topología de Aristas:** Cada nodo se conecta con sus 4 vecinos más cercanos según la matriz de afinidad $W_t$. El grosor de la arista es una función lineal de su peso: $\text{linewidth} = 0.5 + 3.5 \cdot W_{ij}$.
-3. **Codificación de Color:** Las conexiones intradisciplinarias (mismo sector) mantienen el color corporativo asignado, mientras que las conexiones intersectoriales se colorean de gris. 
+3. **Codificación de Color:** Las conexiones intradisciplinarias (mismo sector) mantienen el color corporativo asignado, mientras que las conexiones intersectoriales se colorean de gris.
+
+![Grafo dinamico](../images/grafo_dinamico.gif)
 
 #### 4.4.1 Observaciones sobre la Dinámica Visual
 
