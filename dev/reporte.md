@@ -1,10 +1,8 @@
-# Teoría Espectral de Gráficas
+# ![Logo Facultad de Ciencias](../images/logoFC85.png) Teoría Espectral de Gráficas
 
-## Portada
-> **Proyecto**: Análisis espectral de la estructura y dinámica de redes financieras.
+## **Proyecto**: Análisis espectral de la estructura y dinámica de redes financieras.
 
-**Autor**: Dylan Ramírez Hernández
-![Portada](../images/red_fin.png)
+> **Autor**: Dylan Ramírez Hernández
 
 ## Índice
 1. [Introducción](#1-introducción)
@@ -357,7 +355,7 @@ En cada fotograma de la animación:
 2. **Topología de Aristas:** Cada nodo se conecta con sus 4 vecinos más cercanos según la matriz de afinidad $W_t$. El grosor de la arista es una función lineal de su peso: $\text{linewidth} = 0.5 + 3.5 \cdot W_{ij}$.
 3. **Codificación de Color:** Las conexiones intradisciplinarias (mismo sector) mantienen el color corporativo asignado, mientras que las conexiones intersectoriales se colorean de gris.
 
-![Grafo dinamico](../images/grafo_dinamico.gif)
+![Grafo dinamico](../images/dynamic_graph.gif)
 
 #### 4.4.1 Observaciones sobre la Dinámica Visual
 
