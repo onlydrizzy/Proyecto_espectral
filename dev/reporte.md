@@ -220,6 +220,7 @@ A partir de la matriz de afinidad $W$, se procedió a estudiar la organización 
 El análisis del espectro de la matriz $L$ reveló la existencia de una estructura multiescala. El primer autovalor $\lambda_1 = 0$ confirma la conectividad del grafo, mientras que los valores de $\lambda_2$ y $\lambda_3$ definen la topología de base que será utilizada para la reducción de dimensionalidad.
 
 ![Eigenvalores benchmark](../images/lambdas_bench.png)
+
 *El scree plot muestra un gap significativo (codo) tras los primeros tres autovalores. Este salto inicial confirma que la varianza estructural y la modularidad del mercado pueden capturarse eficazmente reduciendo el sistema a las dimensiones definidas por* $\lambda_2$ *y* $\lambda_3$.
 
 ### 3.3 Visualización y Geometría del Mercado (El Embedding)
@@ -231,7 +232,12 @@ La proyección de los activos en el espacio espectral definido por $u_2$ y $u_3$
 El plano $(u_2, u_3)$ muestra una clara segregación de los activos en función de sus actividades económicas fundamentales.
 
 ![Embedding benchmark](../images/emb_bench.png)
+
 *El embedding proyecta una clara segmentación sectorial: NVDA, AAPL y MSFT coexisten en un cluster tecnológico compacto, distantes de sectores defensivos como Salud (JNJ) y Consumo (PG, KO). Los índices SPY y QQQ adoptan una posición periférica/inferior, actuando como anclajes que sintetizan la exposición de las grandes tecnológicas.*
+
+![Grafo benchmark](../images/grafo_bench.png)
+
+*Visualización del grafo estático sobre espacio espectral*
 
 ### 3.3.2 Propiedades de los Autovectores: Suavidad y Energía de Dirichlet
 
@@ -252,10 +258,12 @@ Adicionalmente, se calculó la variación local promedio, que mide la diferencia
 Estos valores indican una alta consistencia topológica. Dado que la variación local es pequeña en relación con el rango total de los autovectores, se confirma que el embedding logra una "difusión" coherente de la información sectorial. Matemáticamente, esto garantiza que activos con alta afinidad (como MSFT y AAPL) mantengan coordenadas casi idénticas en el espacio proyectado, minimizando la energía del sistema y asegurando que la cercanía geométrica sea un reflejo fiel de la proximidad económica.
 
 ![Eigenvectores benchmark](../images/eigvec_bench.png)
+
 *Las barras muestran cómo cada activo contribuye a la dimensión espectral. Los bloques de barras con alturas similares representan sectores que el autovector está agrupando en una misma región del espacio.*
 
 ![Ordenamiento por valor1](../images/ord_bench.png)
 ![Ordenamiento por valor2](../images/ord2_bench.png)
+
 *Los saltos abruptos marcan las fronteras entre comunidades sectoriales.*
 
 ## 3.4 Validación Mediante Clustering y NMI
@@ -300,6 +308,7 @@ Los autovalores del Laplaciano normalizado codifican las propiedades macroscópi
 El segundo autovalor, o valor de Fiedler ($\lambda_2$), mide la conectividad algebraica del sistema. Un colapso de $\lambda_2$ hacia cero indica que el grafo está cerca de fragmentarse en componentes disjuntas o, en el contexto financiero, que las fuerzas macroeconómicas globales han dominado a las dinámicas sectoriales, incrementando la correlación generalizada y unificando el mercado.
 
 ![Lamndas dinámicas](../images/lamdas_din.png)
+
 *La evolución temporal muestra una marcada compresión del espectro durante crisis sistémicas, destacando el colapso de* $\lambda_2$ *en la época covid. Este descenso evidencia un aumento en la correlación global que absorbe la modularidad sectorial del mercado durante periodos de estrés macroeconómico.*
 
 Además, la monotonía de Fiedler nos garantiza que al quitar aristas (o reducir su peso $W_{ij}$) nunca puede aumentar el valor de Fiedler; solo puede mantenerlo igual o disminuirlo. Esto es importante porque confirma que cualquier aumento en la correlación entre sectores se traduce inmediatamente en una pérdida de la estructura modular.
@@ -309,6 +318,7 @@ Además, la monotonía de Fiedler nos garantiza que al quitar aristas (o reducir
 El gap espectral primario, definido como $\delta_t = \lambda_3 - \lambda_2$, es el parámetro gobernante en la estabilidad del embedding según el teorema de Davis-Kahan. Cuando $\delta_t$ se reduce drásticamente, los subespacios propios se vuelven altamente sensibles al ruido, lo que se traduce en una pérdida de nitidez en las fronteras de los sectores económicos dentro del embedding.
 
 ![Gap dinámico](../images/gap_din.png)
+
 *Al ensancharse la distancia entre* $\lambda_2$ *y* $\lambda_3$ *el sistema blindó el embedding contra el ruido (Davis-Kahan), permitiendo al algoritmo identificar esta polarización macro-sectorial con mayor claridad.*
 
 ### 4.3 Análisis de la Estructura Comunitaria (NMI Dinámico)
@@ -336,6 +346,29 @@ Las anomalías estructurales detectadas por el NMI no son erráticas, sino que s
 2. **El Régimen Inflacionario y Alza de Tasas:** La curva muestra una alta inestabilidad con caídas violentas a mediados de 2021 y principios de 2022, periodos marcados por el inicio del endurecimiento de la política monetaria de la Reserva Federal, un factor macroeconómico que afectó transversalmente a múltiples sectores.
 
 Un aspecto crítico del sistema es su capacidad de recuperación: tras alcanzar un mínimo, el NMI experimenta rebotes elásticos hacia su media histórica. Esto denota que las transiciones de régimen hacia la desorganización comunitaria son de carácter transitorio; una vez absorbido el shock por el mercado, las fuerzas de arbitraje sectorial restablecen la geometría fundamental del grafo.
+
+### 4.4 Visualización del Grafo Dinámico: La Geometría del Estrés Financiero
+
+Para sintetizar la evolución conjunta de las coordenadas geométricas y las intensidades de conexión, los resultados se compilaron en una animación interactiva utilizando un grafo $k$-NN adaptativo con $k_{\text{nn}} = 4$.
+
+En cada fotograma de la animación:
+1. **Posicionamiento de Nodos:** Las coordenadas $(x, y)$ de cada activo corresponden a sus valores alineados en el embedding $(u_2, u_3)$, corregidos mediante la rotación de Procrustes para garantizar la continuidad visual.
+2. **Topología de Aristas:** Cada nodo se conecta con sus 4 vecinos más cercanos según la matriz de afinidad $W_t$. El grosor de la arista es una función lineal de su peso: $\text{linewidth} = 0.5 + 3.5 \cdot W_{ij}$.
+3. **Codificación de Color:** Las conexiones intradisciplinarias (mismo sector) mantienen el color corporativo asignado, mientras que las conexiones intersectoriales se colorean de gris. 
+
+#### 4.4.1 Observaciones sobre la Dinámica Visual
+
+La animación evidencia que el mercado fluctúa de forma continua entre dos regímenes macroestructurales:
+
+* **Régimen de Modularidad Sectorial (Fase de Estabilidad):** Durante los periodos donde el NMI es elevado, el grafo presenta una estructura clara de "archipiélago". Esto refleja un mercado dominado por factores idiosincráticos, donde los activos se mueven predominantemente según sus fundamentos económicos.
+
+![Ejemplo 1](../images/ej1_din.png)
+
+* **Régimen de Contracción Sistémica (Fase de Estrés):** Durante los periodos de alta volatilidad (visibles claramente en los valles del NMI), la geometría del mercado sufre contracciones. Ante shocks las fronteras sectoriales se desdibujan porque la correlación global se impone sobre la especificidad de cada sector; es decir, las empresas empiezan a tener comportamientos similares a otras (contagio financiero) como signo de una cobertura defensiva. 
+Visualmente el gráfo es más fácil particionar ($\lambda_2$ cercano a 0) pero no por sectores económicos sino por activos de distintos: defensivos, de riesgo y cíclicos; las técnicas espectrales nos confirman la naturaleza misma de estos activos pues reaccionan de manera distinta ante estrés financiero.
+
+![Ejemplo 2](../images/ej2_din.png)
+![Ejemplo 3](../images/ej3_din.png)
 
 ## 5. Conclusiones
 Síntesis de cómo el espectro del Laplaciano actúa como un termómetro de la cohesión del mercado.
