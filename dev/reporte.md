@@ -1,6 +1,6 @@
 # ![Logo Facultad de Ciencias](../images/logoFC85.png) Teoría Espectral de Gráficas
 
-## **Proyecto**: Geometría espectral y dinámica de regímenes en redes financieras: un enfoque mediante Laplacianos normalizados
+## **Proyecto**: Dinámica en redes financieras: un enfoque mediante Laplacianos normalizados
 
 > **Autor**: Dylan Ramírez Hernández
 
@@ -35,7 +35,7 @@
   - [4.4 Visualización del Grafo Dinámico](#44-visualización-del-grafo-dinámico)
     - [4.4.1 Observaciones sobre la Dinámica Visual](#441-observaciones-sobre-la-dinámica-visual)
 - [5. Conclusiones y Discusión](#5-conclusiones-y-discusión)
-
+- [6. Referencias](#6-referencias)
 ---
 
 ## 1. Introducción
@@ -407,3 +407,21 @@ Si bien el enfoque espectral aquí desarrollado resulta eficaz para el diagnóst
 3.  **Análisis de Sensibilidad:** Dada la naturaleza dinámica de los embeddings, futuros estudios podrían profundizar en la robustez de estos patrones ante la inclusión de activos de mercados emergentes o criptoactivos, cuyas estructuras de dependencia podrían diferir sustancialmente de los activos tradicionales aquí analizados.
 
 En conclusión, este trabajo valida que la geometría espectral es un sensor de alta precisión para las dinámicas financieras. Más allá de mapear correlaciones, nuestro enfoque permite comprender la "mecánica interna" de las crisis, proporcionando una base sólida para futuras investigaciones sobre el riesgo sistémico y la arquitectura de la fragilidad financiera.
+
+## 6. Referencias
+
+* **Belkin, M., & Niyogi, P.** (2001). *Laplacian Eigenmaps and Spectral Techniques for Embedding and Clustering*. NIPS.
+* **Brouwer, A. E., & Haemers, W. H.** (2011). *Spectra of Graphs*. Springer Science & Business Media.
+* **Caccioli, F., Barucca, P., y Kobayashi, T.** (2018). Network models of financial systemic risk: A review. Journal of Computational Social Science, 1(1), 81–114.
+* **Chung, F. R.** (1997). *Spectral graph theory*. American Mathematical Society.
+* **Cont, R., Moussa, A., y Santos, E. B.** (2010). Network structure and systemic risk in banking systems. SSRN Electronic Journal.
+* **Davis, C., & Kahan, W. M.** (1970). *The rotation of eigenvectors by a perturbation. III*. SIAM Journal on Numerical Analysis.
+* **Fiedler, M.** (1973). *Algebraic connectivity of graphs*. Czechoslovak Mathematical Journal.
+* **Laloux, L., Cizeau, P., Bouchaud, J. P., & Potters, M.** (1999). Noise dressing of financial correlation matrices. Physical Review Letters.
+* **Manning, C. D., Raghavan, P., & Schütze, H.** (2008). *Introduction to Information Retrieval*. Cambridge University Press.
+* **Schönemann, P. H.** (1966). A generalized solution of the orthogonal Procrustes problem. Psychometrika, 31(1), 1-10.
+* **Strehl, A., & Ghosh, J.** (2002). Cluster ensembles — a knowledge reuse framework for combining multiple partitions. Journal of Machine Learning Research.
+* **Tumminello, M., Lillo, F., y Mantegna, R. N.** (2008). Kullback-Leibler distance as a measure of the information filtered from multivariate data. Physical Review E, 77(6), 066114.
+* **Von Luxburg, U.** (2007). A tutorial on spectral clustering. Statistics and Computing, 17(4), 395-416.
+* **Yu, Y., Wang, T., & Samworth, R. J.** (2015). A useful variant of the Davis–Kahan theorem for statisticians. Biometrika.
+* **Zelnik-Manor, L., & Perona, P.** (2004). *Self-tuning spectral clustering*. NIPS.
