@@ -1,35 +1,52 @@
 # ![Logo Facultad de Ciencias](../images/logoFC85.png) Teoría Espectral de Gráficas
 
-## **Proyecto**: Análisis espectral de la estructura y dinámica de redes financieras.
+## **Proyecto**: Geometría espectral y dinámica de regímenes en redes financieras: un enfoque mediante Laplacianos normalizados
 
 > **Autor**: Dylan Ramírez Hernández
 
 ## Índice
-1. [Introducción](#1-introducción)
-2. [Marco Teórico](#2-marco-teórico)
-   
-   2.1 [Mercado financiero como red compleja](#21-mercado-financiero-como-red-compleja)  
-   2.2 [Operadores Laplacianos y Geometría Espectral](#22-operadores-laplacianos-y-geometría-espectral)
-      2.1.1 [El Espectro del Laplaciano y la Estructura de Red](#221-el-espectro-del-laplaciano-y-la-estructura-de-red)
-   2.3 [Embedding Espectral y Reducción de Dimensionalidad](#23-embedding-espectral-y-reducción-de-dimensionalidad)  
-   2.4 [Estabilidad Espectral](#24-estabilidad-espectral)  
-4. [Metodología y Análisis Estático](#3-metodología-y-análisis-estático)
-
-   3.1 [Selección de Datos y Configuración de Parámetros](#31-selección-de-datos-y-configuración-de-parámetros)  
-   3.2 [Análisis de la Estructura Estática (Benchmark)](#32-análisis-de-la-estructura-estática-benchmark)  
-   3.3 [Métricas de Validación](#33-métricas-de-validación)  
-5. [Análisis Dinámico y Transiciones de Régimen](#4-análisis-dinámico-y-transiciones-de-régimen)
-
-   4.1 [Protocolo de Ventanas Móviles (Rolling Windows)](#41-protocolo-de-ventanas-móviles-rolling-windows)  
-   4.2 [Estabilidad Temporal y Alineación de Procrustes](#42-estabilidad-temporal-y-alineación-de-procrustes)  
-   4.3 [Análisis de la Evolución Espectral](#43-análisis-de-la-evolución-espectral)  
-   4.4 [Identificación de Regímenes](#44-identificación-de-regímenes)  
-6. [Conclusiones](#5-conclusiones)
+- [1. Introducción](#1-introducción)
+- [2. Marco Teórico](#2-marco-teórico)
+  - [2.1 Mercado financiero como red compleja](#21-mercado-financiero-como-red-compleja)
+  - [2.2 Operadores Laplacianos y Geometría Espectral](#22-operadores-laplacianos-y-geometría-espectral)
+    - [2.2.1 El Espectro del Laplaciano y la Estructura de Red](#221-el-espectro-del-laplaciano-y-la-estructura-de-red)
+  - [2.3 Embedding Espectral y Reducción de Dimensionalidad](#23-embedding-espectral-y-reducción-de-dimensionalidad)
+  - [2.4 Estabilidad Espectral y el Teorema de Davis-Kahan](#24-estabilidad-espectral-y-el-teorema-de-davis-kahan)
+- [3. Metodología y Análisis Estático](#3-metodología-y-análisis-estático)
+  - [3.1 Configuración del Experimento y Datos](#31-configuración-del-experimento-y-datos)
+    - [3.1.1 Universo de Activos y Clasificación Sectorial](#311-universo-de-activos-y-clasificación-sectorial)
+    - [3.1.2 Preprocesamiento de Datos](#312-preprocesamiento-de-datos)
+  - [3.2 Construcción y Topología del Grafo Estático](#32-construcción-y-topología-del-grafo-estático)
+  - [3.3 Visualización y Geometría del Mercado (El Embedding)](#33-visualización-y-geometría-del-mercado-el-embedding)
+    - [3.3.1 Análisis del Embedding Espectral](#331-análisis-del-embedding-espectral)
+    - [3.3.2 Propiedades de los Autovectores: Suavidad y Energía de Dirichlet](#332-propiedades-de-los-autovectores-suavidad-y-energía-de-dirichlet)
+  - [3.4 Validación Mediante Clustering y NMI](#34-validación-mediante-clustering-y-nmi)
+- [4. Análisis Dinámico y Transición de Regímenes](#4-análisis-dinámico-y-transición-de-regímenes)
+  - [4.1 Protocolo de Ventanas Móviles y Estabilidad Geométrica](#41-protocolo-de-ventanas-móviles-y-estabilidad-geométrica)
+    - [4.1.1 Configuración de Ventanas Temporales](#411-configuración-de-ventanas-temporales)
+    - [4.1.2 El Problema de la Indeterminación Espectral y Alineación de Procrustes](#412-el-problema-de-la-indeterminación-espectral-y-alineación-de-procrustes)
+  - [4.2 Dinámica del Espectro y el Gap Espectral](#42-dinámica-del-espectro-y-el-gap-espectral)
+    - [4.2.1 Evolución de la Conectividad Algebraica y Autovalores Superiores](#421-evolución-de-la-conectividad-algebraica-y-autovalores-superiores)
+    - [4.2.2 Dinámica del Gap Espectral](#422-dinámica-del-gap-espectral)
+  - [4.3 Análisis de la Estructura Comunitaria (NMI Dinámico)](#43-análisis-de-la-estructura-comunitaria-nmi-dinámico)
+    - [4.3.1 Resiliencia de la Estructura Fundamental](#431-resiliencia-de-la-estructura-fundamental)
+    - [4.3.2 Shocks de Desacoplamiento Estructural Transitorios](#432-shocks-de-desacoplamiento-estructural-transitorios)
+    - [4.3.3 Correspondencia con Eventos Macroeconómicos Históricos](#433-correspondencia-con-eventos-macroeconómicos-históricos)
+  - [4.4 Visualización del Grafo Dinámico](#44-visualización-del-grafo-dinámico)
+    - [4.4.1 Observaciones sobre la Dinámica Visual](#441-observaciones-sobre-la-dinámica-visual)
+- [5. Conclusiones y Discusión](#5-conclusiones-y-discusión)
 
 ---
 
 ## 1. Introducción
-Contexto del mercado como sistema complejo y el objetivo de identificar transiciones de régimen mediante geometría espectral.
+
+El mercado financiero contemporáneo es, en esencia, un sistema complejo de interacciones donde los activos no se comportan como entidades aisladas, sino como nodos interconectados en una red dinámica. Si bien la literatura ha dedicado esfuerzos considerables a mapear estas dependencias mediante modelos estadísticos tradicionales, la persistencia del ruido en las matrices de correlación a menudo dificulta la identificación de la estructura topológica subyacente (Laloux et al., 1999).
+
+En este contexto, el presente trabajo aborda el estudio de los mercados financieros desde la perspectiva de la Teoría Espectral de Grafos. A diferencia de los enfoques que emplean métricas puramente estadísticas, este trabajo explora cómo el espectro del Laplaciano normalizado y sus correspondientes embeddings espectrales permiten capturar la "geometría" del mercado. Si bien estudios previos, como los de Caccioli, Barucca y Kobayashi (2018) o Cont et al. (2010), han consolidado el uso de redes para comprender el riesgo sistémico, existe un área de oportunidad significativa en el uso de técnicas espectrales para realizar un diagnóstico temporal de la estabilidad estructural del mercado.
+
+El propósito fundamental de este trabajo es investigar la evolución de esta estructura mediante la construcción de un embedding espectral dinámico. A través de este mecanismo, se propone analizar cómo el mercado transita entre regímenes de alta modularidad y fases de contracción sistémica, donde la correlación global predomina sobre la especificidad de los activos. 
+
+Este análisis no pretende establecer una ley universal de comportamiento, sino caracterizar la respuesta del mercado ante shocks macroeconómicos y sugerir que, incluso cuando las clasificaciones sectoriales pierden relevancia, el formalismo espectral es capaz de revelar patrones subyacentes, como la distinción entre activos de *crecimiento* (*growth*) y de *valor* (*value*). Al integrar herramientas estadísticas y el análisis espectral en una visualización interactiva, este estudio busca ofrecer una perspectiva complementaria a los métodos tradicionales, validando la sensibilidad de la geometría espectral como un sensor eficaz para interpretar la complejidad del sistema financiero.
 
 ---
 
@@ -39,9 +56,9 @@ Contexto del mercado como sistema complejo y el objetivo de identificar transici
 
 El mercado financiero ha sido ampliamente estudiado desde la perspectiva de la teoría de grafos debido a que las interacciones entre activos generan estructuras de dependencia no triviales. La literatura reconoce que dichas interacciones pueden representarse mediante redes ponderadas, en las cuales los nodos corresponden a entidades financieras o activos, y las aristas codifican relaciones de dependencia o similitud entre ellos (Caccioli, Barucca y Kobayashi, 2018; Cont et al., 2010).
 
-Dado que el universo completo de activos negociables es extremadamente grande, en la práctica el análisis suele realizarse sobre un subconjunto representativo de activos, seleccionado de acuerdo con el objetivo de estudio. Dicho subconjunto induce una red financiera que preserva, al menos de forma local, relaciones estructurales relevantes del mercado.
+Dado que el universo completo de activos negociables es extremadamente grande, en la práctica el análisis suele realizarse sobre un subconjunto representativo de activos; seleccionado de acuerdo con el objetivo de estudio. Dicho subconjunto induce una red financiera que preserva, al menos de forma local, relaciones estructurales relevantes del mercado.
 
-En el contexto financiero, la dependencia entre activos suele derivarse de la correlación entre sus series de retornos. La aplicación de este concepto es fundamental, dado que la evidencia empírica muestra que las matrices de correlación capturan la estructura jerárquica y la topología interna que subyacen en los mercados financieros (Tumminello, Lillo y Mantegna, 2008).
+En el contexto financiero, la dependencia entre activos suele derivarse de la correlación entre sus series de retornos. La aplicación de este concepto es fundamental, dado que la evidencia empírica, como podemos ver en trabajos como el de Tumminello, Lillo y Mantegna (2008), muestra que las matrices de correlación capturan la estructura jerárquica y la topología interna que subyacen en los mercados financieros.
 
 Sea $V = \{v_1,\dots,v_n\}$ un conjunto de activos con precios $P_i(t)$. Para cada activo $i$, se consideran los retornos logarítmicos definidos por
 
@@ -119,13 +136,11 @@ donde:
 - $E\subseteq V\times V$ representa las conexiones entre activos,
 - $W=(W_{ij})$ es la matriz de pesos que codifica la intensidad de la relación entre pares de activos.
 
-En particular, la estructura de red resulta útil para analizar fenómenos de contagio financiero y acoplamiento sistémico, donde perturbaciones locales pueden propagarse a través de las conexiones del grafo.
-
-Por tanto, la representación del mercado como red compleja constituye la base conceptual sobre la cual se desarrolla el análisis espectral presentado en este trabajo.
+Por tanto, la representación del mercado como red constituye la base conceptual sobre la cual se desarrolla el análisis espectral presentado en este trabajo.
 
 ### 2.2 Operadores Laplacianos y Geometría Espectral
 
-Una vez definida la matriz de afinidad $W$, la caracterización de la estructura global de una red se realiza a través de los operadores Laplacianos. El Laplaciano permite analizar propiedades geométricas del sistema mediante el estudio de su espectro, actuando como una discretización de operadores de difusión sobre la geometría inducida por las correlaciones de los activos (Chung, 1997; von Luxburg, 2007).
+Una vez definida la matriz de afinidad $W$, la caracterización de la estructura global de una red se realiza a través de los operadores Laplacianos. El Laplaciano permite analizar propiedades geométricas del sistema mediante el estudio de su espectro, actuando como una discretización de operadores de difusión sobre la geometría inducida por las correlaciones de los activos.
 
 Sea $D$ la matriz de grado de la red, definida como la matriz diagonal donde cada elemento $D_{ii} = \sum_{j=1}^{n} W_{ij}$. Para este estudio, se utiliza el Laplaciano normalizado simétrico, denotado como $L$, el cual se define como:
 
@@ -142,7 +157,7 @@ El operador $L$ posee propiedades fundamentales que sustentan el análisis espec
 
 La información sobre la topología del mercado se encuentra codificada en los autovalores y autovectores de $L$, que satisfacen la ecuación $Lu_k = \lambda_k u_k$. Debido a las propiedades mencionadas, los autovalores se ordenan de forma ascendente $0 = \lambda_1 \leq \lambda_2 \leq \dots \leq \lambda_n$.
 
-El primer autovalor $\lambda_1$ es siempre nulo y su autovector asociado $u_1 = D^{1/2}\mathbf{1}$ es constante (tras la normalización por grado), por lo que no aporta información sobre la segmentación del grafo. Sin embargo, los autovalores subsecuentes y la magnitud de los gaps espectrales ( $\lambda_{k+1}−\lambda_{k}$ ) son indicadores directos de la conectividad y la modularidad del sistema.
+Para el caso del Laplaciano normalizado, el primer autovalor $\lambda_1$ es siempre nulo y su autovector asociado, $u_1 = D^{1/2}\mathbf{1}$, es constante tras la normalización por grado, por lo que no aporta información sobre la segmentación del grafo. Sin embargo, los autovalores subsecuentes y la magnitud de los gaps espectrales ( $\lambda_{k+1}−\lambda_{k}$ ) son indicadores directos de la conectividad y la modularidad del sistema.
 
 Un parámetro fundamental en este análisis es el segundo autovalor más pequeño $\lambda_2$ , conocido como el valor de Fiedler o conectividad algebraica. Este valor constituye una medida de la robustez de la red: cuanto más cercano a cero se encuentre más fácil es particionar el grafo en componentes débilmente conectadas (Fiedler, 1973). Su autovector asociado $u_2$  (vector de Fiedler), permite realizar la partición óptima del mercado en dos grandes macro-estructuras, minimizando el flujo de información o correlación entre ellas.
 
@@ -174,7 +189,7 @@ $$
 \hat{d}(u, \tilde{u}) \leq \frac{\|E\|}{\delta}
 $$
 
-Donde $\delta$ representa la distancia mínima entre el autovalor de interés y el resto del espectro (el gap). En el contexto de este proyecto, veremos que esta relación tiene dos implicaciones críticas:
+Donde $\delta = \lambda_{k+1} - \lambda_k$ representa el gap espectral, es decir, la distancia mínima entre el autovalor de interés y el resto del espectro. En el contexto de este proyecto, veremos que esta relación tiene dos implicaciones críticas:
 
 1. **Fiabilidad del Embedding:** En periodos de alta modularidad (donde el gap espectral es grande), el embedding es sumamente robusto. Pequeñas fluctuaciones en los precios no alteran la posición relativa de los activos en el mapa espectral, validando la estabilidad de los sectores identificados.
 2. **Sensibilidad en Crisis:** Durante periodos de acoplamiento global, el gap espectral $\delta$ tiende a reducirse significativamente. De acuerdo con el teorema, esto incrementa la sensibilidad de los autovectores ante cualquier perturbación, lo que tomará relevancia posteriormente en la interpretación de resultados.
@@ -208,7 +223,9 @@ Se extrajeron los precios de cierre, utilizando la API de Yahoo Finance, ajustad
 
 Para el análisis estático inicial (benchmark), se fijó una ventana de tiempo de 60 días de negociación, la cual proporciona un equilibrio óptimo entre la estabilidad estadística de las correlaciones y la capacidad de capturar la dinámica estructural del periodo.
 
-En cuanto a la construcción de la matriz de afinidad $W$, se configuró un kernel self-tuning con un parámetro de **$k=5$** vecinos más cercanos. Esta elección es deliberada: dado que la mayoría de los sectores cuentan con 2 o 3 activos en esta muestra, un $k=5$ asegura que el parámetro de escala $\sigma_i$ no solo considere la cohesión interna del sector, sino que también detecte la transición hacia activos de otros sectores. 
+En cuanto a la construcción de la matriz de afinidad $W$, se configuró un kernel self-tuning con un parámetro de $k=5$ vecinos más cercanos. Esta elección es deliberada: dado que la mayoría de los sectores cuentan con 2 o 3 activos en esta muestra, un $k=5$ asegura que el parámetro de escala $\sigma_i$ no solo considere la cohesión interna del sector, sino que también detecte la transición hacia activos de otros sectores. 
+
+Aunque el presente trabajo utiliza $k=5$, se realizaron pruebas de sensibilidad en la etapa experimental para verificar que la topología del embedding es robusta ante variaciones de este parámetro, manteniendo una estructura de clusters coherente en el intervalo $k \in [3, 7]$.
 
 ### 3.2 Construcción y Topología del Grafo Estático
 
@@ -226,7 +243,7 @@ El análisis del espectro de la matriz $L$ reveló la existencia de una estructu
 
 La proyección de los activos en el espacio espectral definido por $u_2$ y $u_3$ permite visualizar la formación de agrupamientos sin haber proporcionado etiquetas previas.
 
-### 3.3.1 Análisis del Embedding Espectral
+#### 3.3.1 Análisis del Embedding Espectral
 
 El plano $(u_2, u_3)$ muestra una clara segregación de los activos en función de sus actividades económicas fundamentales.
 
@@ -238,7 +255,7 @@ El plano $(u_2, u_3)$ muestra una clara segregación de los activos en función 
 
 *Visualización del grafo estático (*$k$*-nn)sobre espacio espectral.*
 
-### 3.3.2 Propiedades de los Autovectores: Suavidad y Energía de Dirichlet
+#### 3.3.2 Propiedades de los Autovectores: Suavidad y Energía de Dirichlet
 
 Para validar que los autovectores seleccionados capturan la estructura de la red de manera significativa, se calculó la Energía de Dirichlet: $\mathcal{E}(u)$ para $u_2$ y $u_3$. Esta métrica cuantifica qué tan "suave" es una función (en este caso, el autovector) sobre los nodos del grafo, penalizando las transiciones bruscas entre activos altamente correlacionados:
 
@@ -267,18 +284,18 @@ Estos valores indican una alta consistencia topológica. Dado que la variación 
 
 ## 3.4 Validación Mediante Clustering y NMI
 
-Para concluir la caracterización estática, se aplicó el algoritmo de **K-means** sobre el espacio euclidiano definido por el embedding $(u_2, u_3)$. El objetivo es contrastar si los grupos identificados puramente por la geometría del Laplaciano (método no supervisado) coinciden con la clasificación sectorial económica predefinida.
+Para concluir la caracterización estática, se aplicó el algoritmo de K-means sobre el espacio euclidiano definido por el embedding $(u_2, u_3)$. El objetivo es contrastar si los grupos identificados puramente por la geometría del Laplaciano (método no supervisado) coinciden con la clasificación sectorial económica predefinida.
 
-La métrica de **Información Mutua Normalizada (NMI)** arrojó un resultado de:
+La métrica de Información Mutua Normalizada (NMI) arrojó un resultado de:
 *   **NMI $\approx$ 0.826**
 
-Este valor representa una evidencia empírica contundente: existe una coincidencia superior al 83% entre la estructura de correlaciones intrínsecas del mercado y las etiquetas sectoriales fundamentales. Este alto grado de concordancia valida el uso del embedding espectral como un "mapa" fidedigno de la economía y establece el punto de referencia (benchmark) necesario para evaluar, en las secciones siguientes, cómo esta estructura se degrada o fortalece ante eventos de inestabilidad financiera.
+Este valor, cuya fundamentación matemática y propiedades estadísticas pueden consultarse en Manning, Raghavan y Schütze (2008), representa una evidencia empírica contundente: existe una coincidencia superior al 82% entre la estructura de correlaciones intrínsecas del mercado y las etiquetas sectoriales fundamentales. Este alto grado de concordancia valida el uso del embedding espectral como un "mapa" fidedigno de la economía y establece el punto de referencia (benchmark) necesario para evaluar, en las secciones siguientes, cómo esta estructura se degrada o fortalece ante eventos de inestabilidad financiera.
 
 ---
 
 ## 4. Análisis Dinámico y Transición de Regímenes
 
-Para capturar la naturaleza evolutiva de los mercados financieros, el formalismo espectral debe transicionar de una caracterización estática a un esquema dinámico capaz de rastrear las mutaciones en la conectividad del sistema.
+El análisis estático realizado en la sección anterior ha validado que el marco espectral captura fielmente la lógica económica en condiciones de estabilidad. Para extender esta caracterización hacia un esquema dinámico capaz de rastrear las mutaciones en la conectividad del sistema, el formalismo espectral debe transicionar hacia un enfoque de ventanas móviles.
 
 ### 4.1 Protocolo de Ventanas Móviles y Estabilidad Geométrica
 
@@ -288,21 +305,21 @@ La dinámica temporal se modela mediante un enfoque de ventanas móviles (*rolli
 
 #### 4.1.2 El Problema de la Indeterminación Espectral y Alineación de Procrustes
 
-Un desafío matemático fundamental al calcular descomposiciones espectrales de forma secuencial es la **indeterminación de base**. Dado que los autovectores correspondientes a un autovalor están definidos salvo por su signo, y que variaciones mínimas en los datos pueden rotar los subespacios propios, las coordenadas del embedding $X_t = [u_2, u_3] \in \mathbb{R}^{n \times 2}$ en el tiempo $t$ no son directamente comparables con las del tiempo $t-1$. Visualmente, esto provocaría que los activos "salten" de un cuadrante a otro de manera artificial entre ventanas consecutivas, imposibilitando el rastreo de trayectorias.
+Un desafío matemático fundamental al calcular descomposiciones espectrales de forma secuencial es la indeterminación de base. Dado que los autovectores correspondientes a un autovalor están definidos salvo por su signo, y que variaciones mínimas en los datos pueden rotar los subespacios propios, las coordenadas del embedding $X_t = [u_2, u_3] \in \mathbb{R}^{n \times 2}$ en el tiempo $t$ no son directamente comparables con las del tiempo $t-1$. Visualmente, esto provocaría que los activos "salten" de un cuadrante a otro de manera artificial entre ventanas consecutivas, imposibilitando el rastreo de trayectorias.
 
-Para resolver esta falta de unicidad geométrica, se implementó el **Problema de Procrustes Ortogonal**. Para cada ventana $t \geq 1$, se busca una matriz de rotación ortogonal $R_{\text{opt}} \in \mathbb{R}^{2 \times 2}$ que minimice la distancia de Frobenius entre el embedding actual y el embedding de la ventana inmediatamente anterior, actuando este último como configuración de referencia:
+Para resolver esta falta de unicidad geométrica, se implementó el Problema de Procrustes Ortogonal. Para cada ventana $t \geq 1$, se busca una matriz de rotación ortogonal $R_{\text{opt}} \in \mathbb{R}^{2 \times 2}$ que minimice la distancia de Frobenius entre el embedding actual y el embedding de la ventana inmediatamente anterior, actuando este último como configuración de referencia:
 
 $$
 \min_{R} \|X_t R - X_{t-1}\|_F^2 \quad \text{sujeto a} \quad R^T R = I
 $$
 
-Utilizando la descomposición en valores singulares (SVD) del producto inter-matriz $X_t^T X_{t-1} = U \Sigma V^T$, la solución analítica óptima se establece como $R_{\text{opt}} = U V^T$. El embedding alineado se calcula entonces como $X_t^{\text{aligned}} = X_t R_{\text{opt}}$. Esta transformación preserva intactas las distancias euclidianas internas y la estructura de clusters de cada ventana, pero elimina los efectos espurios de rotación y reflexión, garantizando así la continuidad geométrica.
+Utilizando la descomposición en valores singulares (SVD) del producto inter-matriz $X_t^T X_{t-1} = U \Sigma V^T$, la solución analítica óptima se establece como $R_{\text{opt}} = U V^T$. Esta solución, basada en el teorema de Schönemann (1966), garantiza que la transformación de rotación extraiga la máxima correlación entre los subespacios sin deformar su geometría interna. El embedding alineado se calcula entonces como $X_t^{\text{aligned}} = X_t R_{\text{opt}}$. Así, la transformación preserva intactas las distancias euclidianas internas y la estructura de clusters de cada ventana, pero elimina los efectos espurios de rotación y reflexión, garantizando la continuidad geométrica.
 
 ### 4.2 Dinámica del Espectro y el Gap Espectral
 
 Los autovalores del Laplaciano normalizado codifican las propiedades macroscópicas de la red en cada instante de tiempo. Su evolución temporal actúa como un indicador temprano de transiciones de fase en el mercado.
 
-#### 4.2.1 Evolución de la Conectividad Algebraica ($\lambda_2$) y Autovalores Superiores
+#### 4.2.1 Evolución de la Conectividad Algebraica y Autovalores Superiores
 
 El segundo autovalor, o valor de Fiedler ($\lambda_2$), mide la conectividad algebraica del sistema. Un colapso de $\lambda_2$ hacia cero indica que el grafo está cerca de fragmentarse en componentes disjuntas o, en el contexto financiero, que las fuerzas macroeconómicas globales han dominado a las dinámicas sectoriales, incrementando la correlación generalizada y unificando el mercado.
 
@@ -346,7 +363,7 @@ Las anomalías estructurales detectadas por el NMI no son erráticas, sino que s
 
 Un aspecto crítico del sistema es su capacidad de recuperación: tras alcanzar un mínimo, el NMI experimenta rebotes elásticos hacia su media histórica. Esto denota que las transiciones de régimen hacia la desorganización comunitaria son de carácter transitorio; una vez absorbido el shock por el mercado, las fuerzas de arbitraje sectorial restablecen la geometría fundamental del grafo.
 
-### 4.4 Visualización del Grafo Dinámico: La Geometría del Estrés Financiero
+### 4.4 Visualización del Grafo Dinámico
 
 Para sintetizar la evolución conjunta de las coordenadas geométricas y las intensidades de conexión, los resultados se compilaron en una animación interactiva utilizando un grafo $k$-NN adaptativo con $k_{\text{nn}} = 4$.
 
@@ -371,5 +388,22 @@ Visualmente el gráfo es más fácil particionar ($\lambda_2$ cercano a 0) pero 
 ![Ejemplo 2](../images/ej2_din.png)
 ![Ejemplo 3](../images/ej3_din.png)
 
-## 5. Conclusiones
-Síntesis de cómo el espectro del Laplaciano actúa como un termómetro de la cohesión del mercado.
+---
+
+## 5. Conclusiones y Discusión
+
+La presente investigación ha dejado ver que la Teoría Espectral de Grafos ofrece un marco analítico robusto y sensible para desentrañar la arquitectura oculta de los mercados financieros. Al trascender las métricas estadísticas convencionales, la construcción de un embedding espectral dinámico permitió observar que la topología del mercado no es estática, sino que se encuentra en un estado de metamorfosis constante, dictada por la intensidad del estrés financiero.
+
+#### Hallazgos principales
+Uno de los resultados más reveladores es la transición de regímenes detectada mediante la conectividad algebraica del grafo. Se confirmó que, en condiciones de estabilidad, la estructura del mercado exhibe una clara modularidad alineada con sectores económicos. Sin embargo, ante shocks macroeconómicos, esta geometría colapsa y entonces la correlación global predomina sobre la especificidad de los activos. 
+
+Este comportamiento evidencia que el riesgo financiero podría entenderse no sólo como una magnitud de volatilidad, sino como una fuerza de cohesión topológica. Hemos constatado que, incluso cuando las etiquetas sectoriales pierden relevancia, el formalismo espectral es capaz de discernir una estructura subyacente basada en la naturaleza fundamental de los activos (Growth vs. Value). Esta distinción subraya que los activos no solo reaccionan a la magnitud del estrés, sino que poseen un "ADN financiero" que determina su rol como conductores de pánico o refugios de liquidez.
+
+#### Limitaciones y Trabajo Futuro
+Si bien el enfoque espectral aquí desarrollado resulta eficaz para el diagnóstico temporal, este trabajo abre múltiples avenidas de investigación:
+
+1.  **Refinamiento del Embedding:** Se podría explorar la incorporación de grafos multicapa o tensores para integrar simultáneamente distintas clases de activos (acciones, bonos, divisas) y observar cómo interactúan en un espacio latente de mayor dimensión.
+2.  **Modelado Predictivo:** Una extensión natural sería utilizar la velocidad de transición de la brecha espectral ($\lambda_2$) como un indicador adelantado de inestabilidad sistémica, permitiendo el diseño de sistemas de alerta temprana basados puramente en la geometría del mercado.
+3.  **Análisis de Sensibilidad:** Dada la naturaleza dinámica de los embeddings, futuros estudios podrían profundizar en la robustez de estos patrones ante la inclusión de activos de mercados emergentes o criptoactivos, cuyas estructuras de dependencia podrían diferir sustancialmente de los activos tradicionales aquí analizados.
+
+En conclusión, este trabajo valida que la geometría espectral es un sensor de alta precisión para las dinámicas financieras. Más allá de mapear correlaciones, nuestro enfoque permite comprender la "mecánica interna" de las crisis, proporcionando una base sólida para futuras investigaciones sobre el riesgo sistémico y la arquitectura de la fragilidad financiera.
