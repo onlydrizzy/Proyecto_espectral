@@ -40,7 +40,7 @@
 
 ## 1. Introducción
 
-El mercado financiero contemporáneo es, en esencia, un sistema complejo de interacciones donde los activos no se comportan como entidades aisladas, sino como nodos interconectados en una red dinámica. Si bien la literatura ha dedicado esfuerzos considerables a mapear estas dependencias mediante modelos estadísticos tradicionales, la persistencia del ruido en las matrices de correlación a menudo dificulta la identificación de la estructura topológica subyacente (Laloux et al., 1999).
+El mercado financiero contemporáneo es, en esencia, un sistema complejo de interacciones donde los activos no se comportan como entidades aisladas, sino como nodos interconectados en una red dinámica. Si bien la literatura ha dedicado esfuerzos a mapear estas dependencias mediante modelos estadísticos tradicionales, la persistencia del ruido en las matrices de correlación a menudo dificulta la identificación de la estructura topológica subyacente (Laloux et al., 1999).
 
 En este contexto, el presente trabajo aborda el estudio de los mercados financieros desde la perspectiva de la Teoría Espectral de Grafos. A diferencia de los enfoques que emplean métricas puramente estadísticas, este trabajo explora cómo el espectro del Laplaciano normalizado y sus correspondientes embeddings espectrales permiten capturar la "geometría" del mercado. Si bien estudios previos, como los de Caccioli, Barucca y Kobayashi (2018) o Cont et al. (2010), han consolidado el uso de redes para comprender el riesgo sistémico, existe un área de oportunidad significativa en el uso de técnicas espectrales para realizar un diagnóstico temporal de la estabilidad estructural del mercado.
 
@@ -77,7 +77,7 @@ $$
 
 la cual cuantifica el grado de dependencia lineal entre pares de activos.
 
-Desde una perspectiva económica, valores altos de $\rho_{ij}$ indican que los activos tienden a responder de forma similar ante shocks de mercado, factores macroeconómicos o dinámicas sectoriales comunes.
+Recordemos que $\rho_{ij} \in [-1, 1]$; valores cercanos a 1 en valor absoluto indican una fuerte dependencia (directa o inversa) ante shocks macroeconómicos o sectoriales, mientras que valores próximos a 0 sugieren una independencia estadística entre activos.
 
 Con el fin de dotar a esta estructura de una interpretación geométrica, la correlación se transforma en una distancia mediante la métrica propuesta por Mantegna (1999):
 
@@ -140,15 +140,15 @@ Por tanto, la representación del mercado como red constituye la base conceptual
 
 ### 2.2 Operadores Laplacianos y Geometría Espectral
 
-Una vez definida la matriz de afinidad $W$, la caracterización de la estructura global de una red se realiza a través de los operadores Laplacianos. El Laplaciano permite analizar propiedades geométricas del sistema mediante el estudio de su espectro, actuando como una discretización de operadores de difusión sobre la geometría inducida por las correlaciones de los activos.
+Una vez definida la matriz de afinidad $W$, la caracterización de la estructura global de una red se realiza a través de los operadores Laplacianos. El Laplaciano permite analizar propiedades geométricas del sistema mediante el estudio de su espectro, actuando como una discretización de operadores de difusión sobre la geometría inducida por las correlaciones de los activos (Chung, 1997; von Luxburg, 2007).
 
 Sea $D$ la matriz de grado de la red, definida como la matriz diagonal donde cada elemento $D_{ii} = \sum_{j=1}^{n} W_{ij}$. Para este estudio, se utiliza el Laplaciano normalizado simétrico, denotado como $L$, el cual se define como:
 
-$$
-L = I - D^{-1/2}WD^{-1/2}
-$$
+$$L = I - D^{-1/2}WD^{-1/2}$$
 
-El operador $L$ posee propiedades fundamentales que sustentan el análisis espectral:
+Esta variante es preferida debido a que normaliza la influencia de los grados de los nodos, permitiendo comparar estructuras de red independientemente de la escala de capitalización de los activos. Al normalizar por los grados de los nodos, $L$ deja de representar únicamente una medida de diferencia local y se vincula con la dinámica de una caminata aleatoria sobre el grafo. Bajo esta perspectiva, los elementos de la matriz reflejan la probabilidad de que un shock o inestabilidad se propague entre activos, permitiendo analizar la red no solo como un mapa de intensidades de correlación, sino como un sistema de transmisión de riesgo financiero.
+
+El operador $L$ posee propiedades fundamentales que sustentan nuestro análisis:
 1. **Simetría:** Al ser una matriz simétrica, sus eigenvalores son reales y sus eigenvectores son ortogonales, lo cual permite una descomposición espectral limpia.
 2. **Semidefinida Positiva:** Para cualquier vector $g \in \mathbb{R}^n$, se cumple que $g^T L g \geq 0$. Esta propiedad garantiza que todos sus eigenvalores sean no negativos ($\lambda_i \geq 0$).
 3. **Acotamiento:** Los eigenvalores de $L$ están contenidos en el intervalo $[0, 2]$. El hecho de que el espectro esté acotado independientemente del número de nodos o la escala de los pesos facilita la comparación de la estructura de la red en diferentes ventanas temporales.
@@ -166,6 +166,8 @@ Un parámetro fundamental en este análisis es el segundo eigenvalor más peque�
 ### 2.3 Embedding Espectral y Reducción de Dimensionalidad
 
 La recuperación de la geometría latente del mercado se realiza mediante el mapeo de los activos a un espacio euclidiano de baja dimensionalidad, proceso conocido como embedding espectral. Este método permite visualizar la estructura de clusters que el Laplaciano identifica analíticamente.
+
+Esta capacidad del embedding para revelar la topología subyacente no es arbitraria; está formalmente respaldada por el trabajo de Belkin y Niyogi (2003), quienes demostraron que los eigenvectores del Laplaciano convergen al operador de Laplace-Beltrami sobre una variedad. Esto garantiza que, al mapear los activos a un espacio euclidiano, estamos preservando la estructura geométrica intrínseca de las dependencias financieras, transformando la complejidad de la red en una representación visual coherente.
 
 Para un embedding en $\mathbb{R}^m$, se seleccionan los eigenvectores $u_2, u_3, \dots, u_{m+1}$ asociados a los eigenvalores no nulos más pequeños. En este proyecto, se utiliza una proyección bidimensional donde cada activo $i$ se representa por las coordenadas:
 
@@ -255,7 +257,7 @@ El plano $(u_2, u_3)$ muestra una clara segregación de los activos en función 
 
 ![Grafo benchmark](../images/grafo_bench.png)
 
-*Visualización del grafo estático (*$k$*-nn)sobre espacio espectral.*
+*Visualización del grafo estático (*$k$*-nn) sobre espacio espectral.*
 
 #### 3.3.2 Propiedades de los Eigenvectores: Suavidad y Energía de Dirichlet
 
@@ -413,6 +415,7 @@ En conclusión, este trabajo valida que la geometría espectral es un sensor de 
 ## 6. Referencias
 
 * **Belkin, M., & Niyogi, P.** (2001). *Laplacian Eigenmaps and Spectral Techniques for Embedding and Clustering*. NIPS.
+* **Belkin, M., & Niyogi, P.** (2003). *Laplacian eigenmaps for dimensionality reduction and data representation*. Neural Computation, 15(6), 1373-1396.
 * **Brouwer, A. E., & Haemers, W. H.** (2011). *Spectra of Graphs*. Springer Science & Business Media.
 * **Caccioli, F., Barucca, P., y Kobayashi, T.** (2018). Network models of financial systemic risk: A review. Journal of Computational Social Science, 1(1), 81–114.
 * **Chung, F. R.** (1997). *Spectral graph theory*. American Mathematical Society.
