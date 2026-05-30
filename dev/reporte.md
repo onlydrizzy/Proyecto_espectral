@@ -19,14 +19,14 @@
   - [3.2 Construcción y Topología del Grafo Estático](#32-construcción-y-topología-del-grafo-estático)
   - [3.3 Visualización y Geometría del Mercado (El Embedding)](#33-visualización-y-geometría-del-mercado-el-embedding)
     - [3.3.1 Análisis del Embedding Espectral](#331-análisis-del-embedding-espectral)
-    - [3.3.2 Propiedades de los Autovectores: Suavidad y Energía de Dirichlet](#332-propiedades-de-los-autovectores-suavidad-y-energía-de-dirichlet)
+    - [3.3.2 Propiedades de los Eigenvectores: Suavidad y Energía de Dirichlet](#332-propiedades-de-los-eigenvectores-suavidad-y-energía-de-dirichlet)
   - [3.4 Validación Mediante Clustering y NMI](#34-validación-mediante-clustering-y-nmi)
 - [4. Análisis Dinámico y Transición de Regímenes](#4-análisis-dinámico-y-transición-de-regímenes)
   - [4.1 Protocolo de Ventanas Móviles y Estabilidad Geométrica](#41-protocolo-de-ventanas-móviles-y-estabilidad-geométrica)
     - [4.1.1 Configuración de Ventanas Temporales](#411-configuración-de-ventanas-temporales)
     - [4.1.2 El Problema de la Indeterminación Espectral y Alineación de Procrustes](#412-el-problema-de-la-indeterminación-espectral-y-alineación-de-procrustes)
   - [4.2 Dinámica del Espectro y el Gap Espectral](#42-dinámica-del-espectro-y-el-gap-espectral)
-    - [4.2.1 Evolución de la Conectividad Algebraica y Autovalores Superiores](#421-evolución-de-la-conectividad-algebraica-y-autovalores-superiores)
+    - [4.2.1 Evolución de la Conectividad Algebraica y Eigenvalores Superiores](#421-evolución-de-la-conectividad-algebraica-y-eigenvalores-superiores)
     - [4.2.2 Dinámica del Gap Espectral](#422-dinámica-del-gap-espectral)
   - [4.3 Análisis de la Estructura Comunitaria (NMI Dinámico)](#43-análisis-de-la-estructura-comunitaria-nmi-dinámico)
     - [4.3.1 Resiliencia de la Estructura Fundamental](#431-resiliencia-de-la-estructura-fundamental)
@@ -257,7 +257,7 @@ El plano $(u_2, u_3)$ muestra una clara segregación de los activos en función 
 
 *Visualización del grafo estático (*$k$*-nn)sobre espacio espectral.*
 
-#### 3.3.2 Propiedades de los Autovectores: Suavidad y Energía de Dirichlet
+#### 3.3.2 Propiedades de los Eigenvectores: Suavidad y Energía de Dirichlet
 
 Para validar que los eigenvectores seleccionados capturan la estructura de la red de manera significativa, se calculó la Energía de Dirichlet: $\mathcal{E}(u)$ para $u_2$ y $u_3$. Esta métrica cuantifica qué tan "suave" es una función (en este caso, el eigenvector) sobre los nodos del grafo, penalizando las transiciones bruscas entre activos altamente correlacionados:
 
@@ -269,7 +269,7 @@ En la ventana estática analizada (benchmark), los resultados obtenidos a partir
 *   **$\mathcal{E}(u_2) \approx 9.0116$**
 *   **$\mathcal{E}(u_3) \approx 9.8157$**
 
-Adicionalmente, se calculó la variación local promedio, que mide la diferencia absoluta de los valores del autovector entre cada activo y su vecino más cercano en el embedding:
+Adicionalmente, se calculó la variación local promedio, que mide la diferencia absoluta de los valores del eigenvector entre cada activo y su vecino más cercano en el embedding:
 *   **Variación local en $u_2: 0.0651$**
 *   **Variación local en $u_3: 0.0714$**
 
@@ -385,7 +385,7 @@ La animación evidencia que el mercado fluctúa de forma continua entre dos reg�
 ![Ejemplo 1](../images/ej1_din.png)
 
 * **Régimen de Contracción Sistémica (Fase de Estrés):** Durante los periodos de alta volatilidad (visibles claramente en los valles del NMI), la geometría del mercado sufre contracciones. Ante shocks las fronteras sectoriales se desdibujan porque la correlación global se impone sobre la especificidad de cada sector; es decir, las empresas empiezan a tener comportamientos similares a otras (contagio financiero) como signo de una cobertura defensiva. 
-Visualmente el gráfo es más fácil particionar ($\lambda_2$ cercano a 0) pero no por sectores económicos sino por activos de distintos: defensivos, de riesgo y cíclicos; las técnicas espectrales nos confirman la naturaleza misma de estos activos pues reaccionan de manera distinta ante estrés financiero.
+Visualmente el gráfo es más fácil particionar ($\lambda_2$ cercano a 0) pero no por sectores económicos sino por activos de distintos tipos: defensivos, de riesgo y cíclicos; las técnicas espectrales nos confirman la naturaleza misma de estos activos pues reaccionan de manera distinta ante estrés financiero.
 
 ![Ejemplo 2](../images/ej2_din.png)
 ![Ejemplo 3](../images/ej3_din.png)
@@ -394,7 +394,7 @@ Visualmente el gráfo es más fácil particionar ($\lambda_2$ cercano a 0) pero 
 
 ## 5. Conclusiones y Discusión
 
-La presente investigación ha dejado ver que la Teoría Espectral de Grafos ofrece un marco analítico robusto y sensible para desentrañar la arquitectura oculta de los mercados financieros. Al trascender las métricas estadísticas convencionales, la construcción de un embedding espectral dinámico permitió observar que la topología del mercado no es estática, sino que se encuentra en un estado de metamorfosis constante, dictada por la intensidad del estrés financiero.
+La presente investigación ha dejado ver que la Teoría Espectral de Grafos ofrece un marco analítico para desentrañar la arquitectura oculta de los mercados financieros. Al trascender las métricas estadísticas convencionales, la construcción de un embedding espectral dinámico permitió observar que la topología del mercado no es estática, sino que se encuentra en un estado de metamorfosis constante, dictada por la intensidad del estrés financiero.
 
 #### Hallazgos principales
 Uno de los resultados más reveladores es la transición de regímenes detectada mediante la conectividad algebraica del grafo. Se confirmó que, en condiciones de estabilidad, la estructura del mercado exhibe una clara modularidad alineada con sectores económicos. Sin embargo, ante shocks macroeconómicos, esta geometría colapsa y entonces la correlación global predomina sobre la especificidad de los activos. 
