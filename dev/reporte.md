@@ -149,23 +149,25 @@ L = I - D^{-1/2}WD^{-1/2}
 $$
 
 El operador $L$ posee propiedades fundamentales que sustentan el análisis espectral:
-1. **Simetría:** Al ser una matriz simétrica, sus autovalores son reales y sus autovectores son ortogonales, lo cual permite una descomposición espectral limpia.
-2. **Semidefinida Positiva:** Para cualquier vector $g \in \mathbb{R}^n$, se cumple que $g^T L g \geq 0$. Esta propiedad garantiza que todos sus autovalores sean no negativos ($\lambda_i \geq 0$).
-3. **Acotamiento:** Los autovalores de $L$ están contenidos en el intervalo $[0, 2]$. El hecho de que el espectro esté acotado independientemente del número de nodos o la escala de los pesos facilita la comparación de la estructura de la red en diferentes ventanas temporales.
+1. **Simetría:** Al ser una matriz simétrica, sus eigenvalores son reales y sus eigenvectores son ortogonales, lo cual permite una descomposición espectral limpia.
+2. **Semidefinida Positiva:** Para cualquier vector $g \in \mathbb{R}^n$, se cumple que $g^T L g \geq 0$. Esta propiedad garantiza que todos sus eigenvalores sean no negativos ($\lambda_i \geq 0$).
+3. **Acotamiento:** Los eigenvalores de $L$ están contenidos en el intervalo $[0, 2]$. El hecho de que el espectro esté acotado independientemente del número de nodos o la escala de los pesos facilita la comparación de la estructura de la red en diferentes ventanas temporales.
+
+Este acotamiento se deriva del hecho de que $L = I - M$, donde $M = D^{-1/2}WD^{-1/2}$ es una matriz cuyos eigenvalores $\mu$ pertenecen al intervalo $[-1, 1]$. Por tanto, al restar la identidad, los eigenvalores de $L$ se desplazan al rango $[0, 2]$.
 
 #### 2.2.1 El Espectro del Laplaciano y la Estructura de Red
 
-La información sobre la topología del mercado se encuentra codificada en los autovalores y autovectores de $L$, que satisfacen la ecuación $Lu_k = \lambda_k u_k$. Debido a las propiedades mencionadas, los autovalores se ordenan de forma ascendente $0 = \lambda_1 \leq \lambda_2 \leq \dots \leq \lambda_n$.
+La información sobre la topología del mercado se encuentra codificada en los eigenvalores y eigenvectores de $L$, que satisfacen la ecuación $Lu_k = \lambda_k u_k$. Debido a las propiedades mencionadas, los eigenvalores se ordenan de forma ascendente $0 = \lambda_1 \leq \lambda_2 \leq \dots \leq \lambda_n$.
 
-Para el caso del Laplaciano normalizado, el primer autovalor $\lambda_1$ es siempre nulo y su autovector asociado, $u_1 = D^{1/2}\mathbf{1}$, es constante tras la normalización por grado, por lo que no aporta información sobre la segmentación del grafo. Sin embargo, los autovalores subsecuentes y la magnitud de los gaps espectrales ( $\lambda_{k+1}−\lambda_{k}$ ) son indicadores directos de la conectividad y la modularidad del sistema.
+Para el caso del Laplaciano normalizado, el primer eigenvalor $\lambda_1$ es siempre nulo y su eigenvector asociado, $u_1 = D^{1/2}\mathbf{1}$, es constante tras la normalización por grado, por lo que no aporta información sobre la segmentación del grafo. Sin embargo, los eigenvalores subsecuentes y la magnitud de los gaps espectrales ( $\lambda_{k+1}−\lambda_{k}$ ) son indicadores directos de la conectividad y la modularidad del sistema.
 
-Un parámetro fundamental en este análisis es el segundo autovalor más pequeño $\lambda_2$ , conocido como el valor de Fiedler o conectividad algebraica. Este valor constituye una medida de la robustez de la red: cuanto más cercano a cero se encuentre más fácil es particionar el grafo en componentes débilmente conectadas (Fiedler, 1973). Su autovector asociado $u_2$  (vector de Fiedler), permite realizar la partición óptima del mercado en dos grandes macro-estructuras, minimizando el flujo de información o correlación entre ellas.
+Un parámetro fundamental en este análisis es el segundo eigenvalor más pequeño $\lambda_2$ , conocido como el valor de Fiedler o conectividad algebraica. Este valor constituye una medida de la robustez de la red: cuanto más cercano a cero se encuentre más fácil es particionar el grafo en componentes débilmente conectadas (Fiedler, 1973). Su eigenvector asociado $u_2$  (vector de Fiedler), permite realizar la partición óptima del mercado en dos grandes macro-estructuras, minimizando el flujo de información o correlación entre ellas.
 
 ### 2.3 Embedding Espectral y Reducción de Dimensionalidad
 
 La recuperación de la geometría latente del mercado se realiza mediante el mapeo de los activos a un espacio euclidiano de baja dimensionalidad, proceso conocido como embedding espectral. Este método permite visualizar la estructura de clusters que el Laplaciano identifica analíticamente.
 
-Para un embedding en $\mathbb{R}^m$, se seleccionan los autovectores $u_2, u_3, \dots, u_{m+1}$ asociados a los autovalores no nulos más pequeños. En este proyecto, se utiliza una proyección bidimensional donde cada activo $i$ se representa por las coordenadas:
+Para un embedding en $\mathbb{R}^m$, se seleccionan los eigenvectores $u_2, u_3, \dots, u_{m+1}$ asociados a los eigenvalores no nulos más pequeños. En este proyecto, se utiliza una proyección bidimensional donde cada activo $i$ se representa por las coordenadas:
 
 $$
 v_i \mapsto (u_2(i), u_3(i))
@@ -183,25 +185,25 @@ sujeta a restricciones de ortogonalidad para evitar soluciones triviales. Al min
 
 Como buscamos analizar el mercado financiero de manera dinámica, es decir, mediante ventanas móviles, es imperativo garantizar que las variaciones observadas en el embedding y en el espectro del Laplaciano correspondan a cambios estructurales genuinos y no a perturbaciones estocásticas inherentes a las series de tiempo. La estabilidad de los subespacios propios ante perturbaciones en la matriz de afinidad se sustenta en la teoría de perturbación de matrices, específicamente en el Teorema de Davis-Kahan (Davis y Kahan, 1970).
 
-Consideremos el Laplaciano original $L$ y una versión perturbada $\tilde{L} = L + E$, donde $E$ representa el ruido o pequeñas variaciones en las correlaciones de los activos. El teorema establece que la distancia angular entre los subespacios propios (los autovectores que forman el embedding) está acotada por el cociente entre la magnitud de la perturbación $\|E\|$ y el gap espectral $\delta$:
+Consideremos el Laplaciano original $L$ y una versión perturbada $\tilde{L} = L + R$, donde $R$ representa el ruido o pequeñas variaciones en las correlaciones de los activos. El teorema establece que la distancia angular ($\hat{d}$) entre los subespacios propios (los eigenvectores que forman el embedding) está acotada por el cociente entre la magnitud de la perturbación $\|R\|$ y el gap espectral $\delta$:
 
 $$
-\hat{d}(u, \tilde{u}) \leq \frac{\|E\|}{\delta}
+\hat{d}(u, \tilde{u}) \leq \frac{\|R\|}{\delta}
 $$
 
-Donde $\delta = \lambda_{k+1} - \lambda_k$ representa el gap espectral, es decir, la distancia mínima entre el autovalor de interés y el resto del espectro. En el contexto de este proyecto, veremos que esta relación tiene dos implicaciones críticas:
+Donde $\delta = \lambda_{k+1} - \lambda_k$ representa el gap espectral, es decir, la distancia mínima entre el eigenvalor de interés y el resto del espectro. En el contexto de este proyecto, veremos que esta relación tiene dos implicaciones críticas:
 
 1. **Fiabilidad del Embedding:** En periodos de alta modularidad (donde el gap espectral es grande), el embedding es sumamente robusto. Pequeñas fluctuaciones en los precios no alteran la posición relativa de los activos en el mapa espectral, validando la estabilidad de los sectores identificados.
-2. **Sensibilidad en Crisis:** Durante periodos de acoplamiento global, el gap espectral $\delta$ tiende a reducirse significativamente. De acuerdo con el teorema, esto incrementa la sensibilidad de los autovectores ante cualquier perturbación, lo que tomará relevancia posteriormente en la interpretación de resultados.
+2. **Sensibilidad en Crisis:** Durante periodos de acoplamiento global, el gap espectral $\delta$ tiende a reducirse significativamente. De acuerdo con el teorema, esto incrementa la sensibilidad de los eigenvectores ante cualquier perturbación, lo que tomará relevancia posteriormente en la interpretación de resultados.
 
-Por tanto, el Teorema de Davis-Kahan no solo justifica el uso de los autovectores como descriptores estables de la morfología del mercado, sino que también vincula matemáticamente la pérdida de modularidad (reducción del gap) con la inestabilidad de la estructura sectorial. Esto permitirá transitar del análisis estático de una sola ventana hacia el análisis dinámico de la evolución del mercado con rigor matemático.
+Por tanto, el Teorema de Davis-Kahan no solo justifica el uso de los eigenvectores como descriptores estables de la morfología del mercado, sino que también vincula matemáticamente la pérdida de modularidad (reducción del gap) con la inestabilidad de la estructura sectorial. Esto permitirá transitar del análisis estático de una sola ventana hacia el análisis dinámico de la evolución del mercado con rigor matemático.
 
 ---
 
 ## 3. Metodología y Análisis Estático
 
 ### 3.1 Configuración del Experimento y Datos
-El análisis se fundamenta en un subconjunto de activos seleccionados estratégicamente para cubrir los sectores más representativos de la economía estadounidense, así como su comportamiento frente a índices de referencia. La muestra final se compone de 17 activos individuales y 2 fondos cotizados (ETFs) que actúan como proxis de mercado.
+El análisis se fundamenta en un subconjunto de activos seleccionados mediante un muestreo estratificado, diseñado para cubrir los sectores más representativos de la economía estadounidense y su interacción con índices de mercado. La muestra final se compone de 17 activos individuales y 2 fondos cotizados (ETFs) que actúan como proxis de mercado.
 
 #### 3.1.1 Universo de Activos y Clasificación Sectorial
 
@@ -233,11 +235,11 @@ A partir de la matriz de afinidad $W$, se procedió a estudiar la organización 
 
 *Ver el gráfico estático en la sección 3.3.1*
 
-El análisis del espectro de la matriz $L$ reveló la existencia de una estructura multiescala. El primer autovalor $\lambda_1 = 0$ confirma la conectividad del grafo, mientras que los valores de $\lambda_2$ y $\lambda_3$ definen la topología de base que será utilizada para la reducción de dimensionalidad.
+El análisis del espectro de la matriz $L$ reveló la existencia de una estructura multiescala. El primer eigenvalor $\lambda_1 = 0$ confirma la conectividad del grafo, mientras que los valores de $\lambda_2$ y $\lambda_3$ definen la topología de base que será utilizada para la reducción de dimensionalidad.
 
 ![Eigenvalores benchmark](../images/lambdas_bench.png)
 
-*El scree plot muestra un gap significativo (codo) tras los primeros tres autovalores. Este salto inicial confirma que la varianza estructural y la modularidad del mercado pueden capturarse eficazmente reduciendo el sistema a las dimensiones definidas por* $\lambda_2$ *y* $\lambda_3$.
+*El scree plot muestra un gap significativo (codo) tras los primeros tres eigenvalores. Este salto inicial confirma que la varianza estructural y la modularidad del mercado pueden capturarse eficazmente reduciendo el sistema a las dimensiones definidas por* $\lambda_2$ *y* $\lambda_3$.
 
 ### 3.3 Visualización y Geometría del Mercado (El Embedding)
 
@@ -257,7 +259,7 @@ El plano $(u_2, u_3)$ muestra una clara segregación de los activos en función 
 
 #### 3.3.2 Propiedades de los Autovectores: Suavidad y Energía de Dirichlet
 
-Para validar que los autovectores seleccionados capturan la estructura de la red de manera significativa, se calculó la Energía de Dirichlet: $\mathcal{E}(u)$ para $u_2$ y $u_3$. Esta métrica cuantifica qué tan "suave" es una función (en este caso, el autovector) sobre los nodos del grafo, penalizando las transiciones bruscas entre activos altamente correlacionados:
+Para validar que los eigenvectores seleccionados capturan la estructura de la red de manera significativa, se calculó la Energía de Dirichlet: $\mathcal{E}(u)$ para $u_2$ y $u_3$. Esta métrica cuantifica qué tan "suave" es una función (en este caso, el eigenvector) sobre los nodos del grafo, penalizando las transiciones bruscas entre activos altamente correlacionados:
 
 $$
 \mathcal{E}(u) = \frac{1}{2} \sum_{i,j} W_{ij} (u_i - u_j)^2 = u^T L u
@@ -271,11 +273,11 @@ Adicionalmente, se calculó la variación local promedio, que mide la diferencia
 *   **Variación local en $u_2: 0.0651$**
 *   **Variación local en $u_3: 0.0714$**
 
-Estos valores indican una alta consistencia topológica. Dado que la variación local es pequeña en relación con el rango total de los autovectores, se confirma que el embedding logra una "difusión" coherente de la información sectorial. Matemáticamente, esto garantiza que activos con alta afinidad (como MSFT y AAPL) mantengan coordenadas casi idénticas en el espacio proyectado, minimizando la energía del sistema y asegurando que la cercanía geométrica sea un reflejo fiel de la proximidad económica.
+Estos valores indican una alta consistencia topológica. Dado que la variación local es pequeña en relación con el rango total de los eigenvectores, se confirma que el embedding logra una "difusión" coherente de la información sectorial. Matemáticamente, esto garantiza que activos con alta afinidad (como MSFT y AAPL) mantengan coordenadas casi idénticas en el espacio proyectado, minimizando la energía del sistema y asegurando que la cercanía geométrica sea un reflejo fiel de la proximidad económica.
 
 ![Eigenvectores benchmark](../images/eigvec_bench.png)
 
-*Las barras muestran cómo cada activo contribuye a la dimensión espectral. Los bloques de barras con alturas similares representan sectores que el autovector está agrupando en una misma región del espacio.*
+*Las barras muestran cómo cada activo contribuye a la dimensión espectral. Los bloques de barras con alturas similares representan sectores que el eigenvector está agrupando en una misma región del espacio.*
 
 ![Ordenamiento por valor1](../images/ord_bench.png)
 ![Ordenamiento por valor2](../images/ord2_bench.png)
@@ -305,7 +307,7 @@ La dinámica temporal se modela mediante un enfoque de ventanas móviles (*rolli
 
 #### 4.1.2 El Problema de la Indeterminación Espectral y Alineación de Procrustes
 
-Un desafío matemático fundamental al calcular descomposiciones espectrales de forma secuencial es la indeterminación de base. Dado que los autovectores correspondientes a un autovalor están definidos salvo por su signo, y que variaciones mínimas en los datos pueden rotar los subespacios propios, las coordenadas del embedding $X_t = [u_2, u_3] \in \mathbb{R}^{n \times 2}$ en el tiempo $t$ no son directamente comparables con las del tiempo $t-1$. Visualmente, esto provocaría que los activos "salten" de un cuadrante a otro de manera artificial entre ventanas consecutivas, imposibilitando el rastreo de trayectorias.
+Un desafío matemático fundamental al calcular descomposiciones espectrales de forma secuencial es la indeterminación de base. Dado que los eigenvectores correspondientes a un eigenvalor están definidos salvo por su signo, y que variaciones mínimas en los datos pueden rotar los subespacios propios, las coordenadas del embedding $X_t = [u_2, u_3] \in \mathbb{R}^{n \times 2}$ en el tiempo $t$ no son directamente comparables con las del tiempo $t-1$. Visualmente, esto provocaría que los activos "salten" de un cuadrante a otro de manera artificial entre ventanas consecutivas, imposibilitando el rastreo de trayectorias.
 
 Para resolver esta falta de unicidad geométrica, se implementó el Problema de Procrustes Ortogonal. Para cada ventana $t \geq 1$, se busca una matriz de rotación ortogonal $R_{\text{opt}} \in \mathbb{R}^{2 \times 2}$ que minimice la distancia de Frobenius entre el embedding actual y el embedding de la ventana inmediatamente anterior, actuando este último como configuración de referencia:
 
@@ -317,11 +319,11 @@ Utilizando la descomposición en valores singulares (SVD) del producto inter-mat
 
 ### 4.2 Dinámica del Espectro y el Gap Espectral
 
-Los autovalores del Laplaciano normalizado codifican las propiedades macroscópicas de la red en cada instante de tiempo. Su evolución temporal actúa como un indicador temprano de transiciones de fase en el mercado.
+Los eigenvalores del Laplaciano normalizado codifican las propiedades macroscópicas de la red en cada instante de tiempo. Su evolución temporal actúa como un indicador temprano de transiciones de fase en el mercado.
 
-#### 4.2.1 Evolución de la Conectividad Algebraica y Autovalores Superiores
+#### 4.2.1 Evolución de la Conectividad Algebraica y Eigenvalores Superiores
 
-El segundo autovalor, o valor de Fiedler ($\lambda_2$), mide la conectividad algebraica del sistema. Un colapso de $\lambda_2$ hacia cero indica que el grafo está cerca de fragmentarse en componentes disjuntas o, en el contexto financiero, que las fuerzas macroeconómicas globales han dominado a las dinámicas sectoriales, incrementando la correlación generalizada y unificando el mercado.
+El segundo eigenvalor, o valor de Fiedler ($\lambda_2$), mide la conectividad algebraica del sistema. Un colapso de $\lambda_2$ hacia cero indica que el grafo está cerca de fragmentarse en componentes disjuntas o, en el contexto financiero, que las fuerzas macroeconómicas globales han dominado a las dinámicas sectoriales, incrementando la correlación generalizada y unificando el mercado.
 
 ![Lamndas dinámicas](../images/lamdas_din.png)
 
@@ -339,7 +341,7 @@ El gap espectral primario, definido como $\delta_t = \lambda_3 - \lambda_2$, es 
 
 ### 4.3 Análisis de la Estructura Comunitaria (NMI Dinámico)
 
-Mientras que los autovalores ofrecen una lectura puramente topológica de la conectividad global, el NMI dinámico permite evaluar en qué medida la geometría del embedding preserva la lógica económica fundamental a lo largo del tiempo. En cada ventana temporal, el algoritmo K-means divide el embedding alineado en un número de clusters equivalente a la cantidad de sectores reales ($k = 7$). El NMI cuantifica la concordancia entre estas agrupaciones puramente estadísticas y las etiquetas sectoriales de la industria.
+Mientras que los eigenvalores ofrecen una lectura puramente topológica de la conectividad global, el NMI dinámico permite evaluar en qué medida la geometría del embedding preserva la lógica económica fundamental a lo largo del tiempo. En cada ventana temporal, el algoritmo K-means divide el embedding alineado en un número de clusters equivalente a la cantidad de sectores reales ($k = 7$). El NMI cuantifica la concordancia entre estas agrupaciones puramente estadísticas y las etiquetas sectoriales de la industria.
 
 ![NMI dinámico](../images/nmi_din.png)
 
