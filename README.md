@@ -4,10 +4,13 @@
 
 ## Autor: Dylan Ramírez Hernández
 
-### Enlace:
+### Enlaces:
 
 [Reporte Proyecto](dev/reporte.md)
 
+Notebook para consulta técnica: 
+
+[Proyecto II](dev/ProyectoII.ipynb)
 ### Resumen
 
 El proyecto aborda el estudio de los mercados financieros desde la perspectiva de la Teoría Espectral de Grafos. A diferencia de los enfoques que estudian al mercado mediante modelos puramente estadísticos, este trabajo explora cómo el espectro del Laplaciano normalizado y sus correspondientes embeddings espectrales permiten capturar la "geometría" del mercado.
